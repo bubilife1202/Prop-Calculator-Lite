@@ -756,3 +756,240 @@ body {
         padding: 20px;
     }
 }
+
+/* ========== 스텝 인디케이터 ========== */
+.step-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+    margin-bottom: 30px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.step-number {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--gray-200);
+    color: var(--gray-600);
+    font-size: 1.3rem;
+    font-weight: 700;
+    transition: var(--transition);
+}
+
+.step.active .step-number {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+}
+
+.step.completed .step-number {
+    background: var(--secondary);
+    color: white;
+}
+
+.step-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gray-600);
+    text-align: center;
+}
+
+.step.active .step-label {
+    color: var(--primary);
+}
+
+.step.completed .step-label {
+    color: var(--secondary);
+}
+
+.step-line {
+    flex: 1;
+    height: 3px;
+    background: var(--gray-200);
+    margin: 0 15px;
+    max-width: 100px;
+    transition: var(--transition);
+}
+
+.step-line.completed {
+    background: var(--secondary);
+}
+
+/* ========== 힌트 텍스트 ========== */
+.hint {
+    text-align: center;
+    color: var(--gray-500);
+    font-size: 0.95rem;
+    margin-bottom: 25px;
+}
+
+/* ========== 옵션 설명 ========== */
+.option-desc {
+    font-size: 0.85rem;
+    color: var(--gray-500);
+    font-weight: 400;
+}
+
+.residence-option input:checked + .option-card .option-desc {
+    color: var(--primary);
+}
+
+/* ========== 서브 헤더 ========== */
+.sub-header {
+    padding: 30px 20px 20px;
+    text-align: center;
+}
+
+.sub-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: white;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+    margin-bottom: 10px;
+}
+
+.sub-header .subtitle {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.sub-header .back-btn {
+    margin-bottom: 15px;
+}
+
+/* ========== 버튼 그룹 ========== */
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.next-btn,
+.secondary-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 18px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.next-btn {
+    background: var(--gradient-secondary);
+    color: white;
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+}
+
+.next-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+}
+
+.next-btn:disabled {
+    background: var(--gray-300);
+    color: var(--gray-500);
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.secondary-btn {
+    background: white;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+}
+
+.secondary-btn:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-3px);
+}
+
+.btn-arrow {
+    font-size: 1.3rem;
+    transition: transform 0.3s ease;
+}
+
+.next-btn:hover:not(:disabled) .btn-arrow {
+    transform: translateX(5px);
+}
+
+/* ========== 광고 섹션 ========== */
+.ad-section {
+    margin: 40px 0;
+    padding: 20px;
+    text-align: center;
+}
+
+.ad-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+}
+
+.ad-placeholder {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    min-height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed var(--gray-300);
+}
+
+/* ========== 반응형: 스텝 인디케이터 ========== */
+@media (max-width: 768px) {
+    .step-indicator {
+        padding: 20px 15px;
+    }
+
+    .step-number {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+
+    .step-label {
+        font-size: 0.75rem;
+    }
+
+    .step-line {
+        max-width: 40px;
+        margin: 0 8px;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .step-label {
+        display: none;
+    }
+
+    .step-line {
+        max-width: 30px;
+    }
+}

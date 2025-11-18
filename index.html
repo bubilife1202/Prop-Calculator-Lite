@@ -9,10 +9,9 @@
 </head>
 <body>
     <div class="app">
-        <!-- 메인 입력 화면 -->
-        <div id="mainScreen" class="screen active">
+        <!-- Step 1: 주거 형태 선택 -->
+        <div id="step1Screen" class="screen active">
             <div class="container">
-                <!-- 헤더 -->
                 <header class="header">
                     <div class="header-content">
                         <h1>🏠 집, 살까 말까?</h1>
@@ -20,41 +19,100 @@
                     </div>
                 </header>
 
-                <!-- 주거 형태 선택 -->
-                <div class="residence-selector">
-                    <h2>🏡 비교할 주거 형태를 선택하세요</h2>
-                    <div class="residence-options">
-                        <label class="residence-option">
-                            <input type="checkbox" name="residence" value="buy" checked>
-                            <span class="option-card">
-                                <span class="option-icon">🏠</span>
-                                <span class="option-title">매수</span>
-                            </span>
-                        </label>
-                        <label class="residence-option">
-                            <input type="checkbox" name="residence" value="jeonse" checked>
-                            <span class="option-card">
-                                <span class="option-icon">🔑</span>
-                                <span class="option-title">전세</span>
-                            </span>
-                        </label>
-                        <label class="residence-option">
-                            <input type="checkbox" name="residence" value="monthly" checked>
-                            <span class="option-card">
-                                <span class="option-icon">📅</span>
-                                <span class="option-title">월세</span>
-                            </span>
-                        </label>
+                <div class="step-indicator">
+                    <div class="step active">
+                        <div class="step-number">1</div>
+                        <div class="step-label">주거 형태 선택</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-label">기본 정보</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-label">고급 설정</div>
                     </div>
                 </div>
 
-                <!-- 입력 폼 -->
-                <div class="input-section">
-                    <h2>📝 기본 정보</h2>
+                <div class="residence-selector">
+                    <h2>🏡 비교하고 싶은 주거 형태를 선택하세요</h2>
+                    <p class="hint">최소 2개 이상 선택해주세요</p>
 
-                    <!-- 매수 정보 -->
-                    <div class="input-card">
-                        <h3>매수 관련 정보</h3>
+                    <div class="residence-options">
+                        <label class="residence-option">
+                            <input type="checkbox" name="residence" value="buy">
+                            <span class="option-card">
+                                <span class="option-icon">🏠</span>
+                                <span class="option-title">매수</span>
+                                <span class="option-desc">집을 구매하여 소유</span>
+                            </span>
+                        </label>
+                        <label class="residence-option">
+                            <input type="checkbox" name="residence" value="jeonse">
+                            <span class="option-card">
+                                <span class="option-icon">🔑</span>
+                                <span class="option-title">전세</span>
+                                <span class="option-desc">보증금만 내고 거주</span>
+                            </span>
+                        </label>
+                        <label class="residence-option">
+                            <input type="checkbox" name="residence" value="monthly">
+                            <span class="option-card">
+                                <span class="option-icon">📅</span>
+                                <span class="option-title">월세</span>
+                                <span class="option-desc">매달 임대료 납부</span>
+                            </span>
+                        </label>
+                    </div>
+
+                    <button id="step1NextBtn" class="next-btn" disabled>
+                        <span>다음 단계</span>
+                        <span class="btn-arrow">→</span>
+                    </button>
+                </div>
+
+                <!-- 광고 영역 1 -->
+                <div class="ad-section">
+                    <p class="ad-label">Advertisement</p>
+                    <div class="ad-placeholder"></div>
+                </div>
+
+                <footer class="footer">
+                    <p>본 계산기는 참고용이며, 실제 투자 결정 시 전문가와 상담하시기 바랍니다.</p>
+                </footer>
+            </div>
+        </div>
+
+        <!-- Step 2: 기본 정보 입력 -->
+        <div id="step2Screen" class="screen">
+            <div class="container">
+                <header class="sub-header">
+                    <button id="step2BackBtn" class="back-btn">← 이전</button>
+                    <h1>📝 기본 정보 입력</h1>
+                </header>
+
+                <div class="step-indicator">
+                    <div class="step completed">
+                        <div class="step-number">✓</div>
+                        <div class="step-label">주거 형태 선택</div>
+                    </div>
+                    <div class="step-line completed"></div>
+                    <div class="step active">
+                        <div class="step-number">2</div>
+                        <div class="step-label">기본 정보</div>
+                    </div>
+                    <div class="step-line"></div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-label">고급 설정</div>
+                    </div>
+                </div>
+
+                <div class="input-section">
+                    <div id="buyInputs" class="input-card" style="display: none;">
+                        <h3>🏠 매수 관련 정보</h3>
                         <div class="input-group">
                             <label for="salePrice">
                                 <span>매매가</span>
@@ -70,9 +128,8 @@
                         </div>
                     </div>
 
-                    <!-- 전세/월세 정보 -->
-                    <div class="input-card">
-                        <h3>전세/월세 관련 정보</h3>
+                    <div id="jeonseInputs" class="input-card" style="display: none;">
+                        <h3>🔑 전세 관련 정보</h3>
                         <div class="input-group">
                             <label for="depositPrice">
                                 <span>전세 보증금</span>
@@ -86,7 +143,10 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
 
+                    <div id="monthlyInputs" class="input-card" style="display: none;">
+                        <h3>📅 월세 관련 정보</h3>
                         <div class="input-group">
                             <label for="monthlyDeposit">
                                 <span>월세 보증금</span>
@@ -116,9 +176,8 @@
                         </div>
                     </div>
 
-                    <!-- 개인 재정 정보 -->
                     <div class="input-card">
-                        <h3>개인 재정 정보</h3>
+                        <h3>💰 개인 재정 정보</h3>
                         <div class="input-group">
                             <label for="myCash">
                                 <span>보유 현금</span>
@@ -148,94 +207,135 @@
                         </div>
                     </div>
 
-                    <!-- 고급 설정 (접기/펼치기) -->
-                    <div class="advanced-section">
-                        <button id="advancedToggle" class="advanced-toggle">
-                            <span>🔍 상세 설정</span>
-                            <span class="toggle-icon">▼</span>
+                    <div class="button-group">
+                        <button id="skipAdvancedBtn" class="secondary-btn">
+                            <span>고급 설정 건너뛰기</span>
                         </button>
+                        <button id="step2NextBtn" class="next-btn">
+                            <span>고급 설정으로</span>
+                            <span class="btn-arrow">→</span>
+                        </button>
+                    </div>
+                </div>
 
-                        <div id="advancedInputs" class="advanced-inputs collapsed">
-                            <div class="input-card">
-                                <h3>세금 및 비용</h3>
-                                <div class="input-group">
-                                    <label for="acquisitionTax">
-                                        <span>취득세 + 중개수수료</span>
-                                    </label>
-                                    <div class="input-wrapper">
-                                        <input type="number" id="acquisitionTax" min="0" step="0.1" value="4.5">
-                                        <span class="unit">%</span>
-                                    </div>
-                                </div>
+                <!-- 광고 영역 2 -->
+                <div class="ad-section">
+                    <p class="ad-label">Advertisement</p>
+                    <div class="ad-placeholder"></div>
+                </div>
+            </div>
+        </div>
 
-                                <div class="input-group">
-                                    <label for="propertyTax">
-                                        <span>연간 보유세</span>
-                                    </label>
-                                    <div class="input-wrapper">
-                                        <input type="number" id="propertyTax" min="0" step="10" value="100">
-                                        <span class="unit">만원/년</span>
-                                    </div>
+        <!-- Step 3: 고급 설정 -->
+        <div id="step3Screen" class="screen">
+            <div class="container">
+                <header class="sub-header">
+                    <button id="step3BackBtn" class="back-btn">← 이전</button>
+                    <h1>🔍 고급 설정</h1>
+                    <p class="subtitle">더 정밀한 분석을 위한 상세 설정입니다</p>
+                </header>
+
+                <div class="step-indicator">
+                    <div class="step completed">
+                        <div class="step-number">✓</div>
+                        <div class="step-label">주거 형태 선택</div>
+                    </div>
+                    <div class="step-line completed"></div>
+                    <div class="step completed">
+                        <div class="step-number">✓</div>
+                        <div class="step-label">기본 정보</div>
+                    </div>
+                    <div class="step-line completed"></div>
+                    <div class="step active">
+                        <div class="step-number">3</div>
+                        <div class="step-label">고급 설정</div>
+                    </div>
+                </div>
+
+                <div class="input-section">
+                    <div class="input-card">
+                        <h3>💸 세금 및 비용</h3>
+                        <div class="input-group">
+                            <label for="acquisitionTax">
+                                <span>취득세 + 중개수수료</span>
+                                <span class="tooltip" title="매수 시 발생하는 초기 비용">ⓘ</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="acquisitionTax" min="0" step="0.1" value="4.5">
+                                <span class="unit">%</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="propertyTax">
+                                <span>연간 보유세</span>
+                                <span class="tooltip" title="재산세 + 종합부동산세">ⓘ</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="propertyTax" min="0" step="10" value="100">
+                                <span class="unit">만원/년</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-card">
+                        <h3>📈 투자 가정</h3>
+                        <div class="input-group">
+                            <label for="appreciationRate">
+                                <span>집값 예상 상승률</span>
+                                <span class="tooltip" title="연평균 주택 가격 상승률">ⓘ</span>
+                            </label>
+                            <div class="input-with-slider">
+                                <input type="range" id="appreciationRateSlider" min="-5" max="15" step="0.5" value="2">
+                                <div class="input-wrapper">
+                                    <input type="number" id="appreciationRate" min="-10" step="0.1" value="2">
+                                    <span class="unit">%/년</span>
                                 </div>
                             </div>
+                            <small>주택 가격의 연평균 상승률 예측</small>
+                        </div>
 
-                            <div class="input-card">
-                                <h3>투자 가정</h3>
-                                <div class="input-group">
-                                    <label for="appreciationRate">
-                                        <span>집값 예상 상승률</span>
-                                    </label>
-                                    <div class="input-with-slider">
-                                        <input type="range" id="appreciationRateSlider" min="-5" max="15" step="0.5" value="2">
-                                        <div class="input-wrapper">
-                                            <input type="number" id="appreciationRate" min="-10" step="0.1" value="2">
-                                            <span class="unit">%/년</span>
-                                        </div>
-                                    </div>
-                                    <small>주택 가격의 연평균 상승률 예측</small>
+                        <div class="input-group">
+                            <label for="investmentReturn">
+                                <span>투자 수익률</span>
+                                <span class="tooltip" title="남은 현금을 투자했을 때 예상 수익률">ⓘ</span>
+                            </label>
+                            <div class="input-with-slider">
+                                <input type="range" id="investmentReturnSlider" min="0" max="20" step="0.5" value="8">
+                                <div class="input-wrapper">
+                                    <input type="number" id="investmentReturn" min="0" step="0.1" value="8">
+                                    <span class="unit">%/년</span>
                                 </div>
+                            </div>
+                            <small>전세/월세 살 때 투자할 수 있는 예상 수익률 (예: S&P500 평균 8%)</small>
+                        </div>
 
-                                <div class="input-group">
-                                    <label for="investmentReturn">
-                                        <span>투자 수익률</span>
-                                    </label>
-                                    <div class="input-with-slider">
-                                        <input type="range" id="investmentReturnSlider" min="0" max="20" step="0.5" value="8">
-                                        <div class="input-wrapper">
-                                            <input type="number" id="investmentReturn" min="0" step="0.1" value="8">
-                                            <span class="unit">%/년</span>
-                                        </div>
-                                    </div>
-                                    <small>전세/월세 살 때 투자할 수 있는 예상 수익률 (예: S&P500 평균 8%)</small>
-                                </div>
-
-                                <div class="input-group">
-                                    <label for="holdingPeriod">
-                                        <span>보유 기간</span>
-                                    </label>
-                                    <div class="input-with-slider">
-                                        <input type="range" id="holdingPeriodSlider" min="1" max="30" step="1" value="10">
-                                        <div class="input-wrapper">
-                                            <input type="number" id="holdingPeriod" min="1" step="1" value="10">
-                                            <span class="unit">년</span>
-                                        </div>
-                                    </div>
+                        <div class="input-group">
+                            <label for="holdingPeriod">
+                                <span>보유 기간</span>
+                                <span class="tooltip" title="시뮬레이션 기간">ⓘ</span>
+                            </label>
+                            <div class="input-with-slider">
+                                <input type="range" id="holdingPeriodSlider" min="1" max="30" step="1" value="10">
+                                <div class="input-wrapper">
+                                    <input type="number" id="holdingPeriod" min="1" step="1" value="10">
+                                    <span class="unit">년</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 계산 버튼 -->
                     <button id="calculateBtn" class="calculate-btn">
                         <span class="btn-icon">💡</span>
                         <span>손익 분석 시작하기</span>
                     </button>
                 </div>
 
-                <!-- 푸터 -->
-                <footer class="footer">
-                    <p>본 계산기는 참고용이며, 실제 투자 결정 시 전문가와 상담하시기 바랍니다.</p>
-                </footer>
+                <!-- 광고 영역 3 -->
+                <div class="ad-section">
+                    <p class="ad-label">Advertisement</p>
+                    <div class="ad-placeholder"></div>
+                </div>
             </div>
         </div>
 
@@ -247,7 +347,7 @@
                     <h2>분석 중입니다...</h2>
                     <p>세금, 투자 수익, 손익분기점을 정밀 계산하고 있어요</p>
                 </div>
-                <!-- 광고 영역 -->
+                <!-- 광고 영역 4 -->
                 <div class="ad-placeholder">
                     <p>Advertisement</p>
                 </div>
@@ -262,21 +362,18 @@
                     <h1>📊 분석 결과</h1>
                 </header>
 
-                <!-- 결과 요약 -->
                 <div class="result-summary">
                     <div class="verdict-card">
                         <div id="verdictContent"></div>
                     </div>
                 </div>
 
-                <!-- 그래프 탭 -->
                 <div class="chart-tabs">
                     <button class="chart-tab active" data-chart="comparison">전체 비교</button>
                     <button class="chart-tab" data-chart="individual">개별 분석</button>
                     <button class="chart-tab" data-chart="breakdown">비용 분석</button>
                 </div>
 
-                <!-- 그래프 영역 -->
                 <div class="chart-section">
                     <div id="chartComparison" class="chart-panel active">
                         <div class="chart-container">
@@ -297,13 +394,11 @@
                     </div>
                 </div>
 
-                <!-- 상세 분석 -->
                 <div class="detailed-analysis">
                     <h3>📈 상세 손익 분석</h3>
                     <div id="detailedContent"></div>
                 </div>
 
-                <!-- 공유 버튼 -->
                 <div class="action-buttons">
                     <button id="shareBtn" class="action-btn secondary">
                         <span>🔗</span> 결과 공유하기
@@ -313,7 +408,7 @@
                     </button>
                 </div>
 
-                <!-- 광고 영역 -->
+                <!-- 광고 영역 5 -->
                 <div class="ad-placeholder-bottom">
                     <p>Advertisement</p>
                 </div>

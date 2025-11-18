@@ -1,15 +1,97 @@
 // ========== 전역 변수 및 DOM 요소 ==========
-const mainScreen = document.getElementById('mainScreen');
+const step1Screen = document.getElementById('step1Screen');
+const step2Screen = document.getElementById('step2Screen');
+const step3Screen = document.getElementById('step3Screen');
 const loadingScreen = document.getElementById('loadingScreen');
 const resultScreen = document.getElementById('resultScreen');
 
+let selectedResidenceTypes = [];
 let chartInstances = {
     comparison: null,
     individual: null,
     breakdown: null
 };
-
 let calculationResults = null;
+
+// ========== Step 1: 주거 형태 선택 ==========
+const residenceCheckboxes = document.querySelectorAll('input[name="residence"]');
+const step1NextBtn = document.getElementById('step1NextBtn');
+
+// 체크박스 변경 감지
+residenceCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', () => {
+        const checked = document.querySelectorAll('input[name="residence"]:checked');
+        // 최소 2개 선택해야 다음 버튼 활성화
+        step1NextBtn.disabled = checked.length < 2;
+    });
+});
+
+// Step 1 -> Step 2
+step1NextBtn.addEventListener('click', () => {
+    selectedResidenceTypes = Array.from(document.querySelectorAll('input[name="residence"]:checked'))
+        .map(cb => cb.value);
+
+    // Step 2에 해당하는 입력 필드만 표시
+    document.getElementById('buyInputs').style.display =
+        selectedResidenceTypes.includes('buy') ? 'block' : 'none';
+    document.getElementById('jeonseInputs').style.display =
+        selectedResidenceTypes.includes('jeonse') ? 'block' : 'none';
+    document.getElementById('monthlyInputs').style.display =
+        selectedResidenceTypes.includes('monthly') ? 'block' : 'none';
+
+    switchScreen(step1Screen, step2Screen);
+});
+
+// ========== Step 2: 기본 정보 입력 ==========
+document.getElementById('step2BackBtn').addEventListener('click', () => {
+    switchScreen(step2Screen, step1Screen);
+});
+
+document.getElementById('step2NextBtn').addEventListener('click', () => {
+    switchScreen(step2Screen, step3Screen);
+});
+
+// 고급 설정 건너뛰기 -> 바로 계산
+document.getElementById('skipAdvancedBtn').addEventListener('click', () => {
+    // 입력값 검증
+    const inputs = getInputValues();
+    const errors = validateInputs(inputs, selectedResidenceTypes);
+
+    if (errors.length > 0) {
+        showValidationErrors(errors, step2Screen);
+        return;
+    }
+
+    // 로딩 화면으로
+    switchScreen(step2Screen, loadingScreen);
+
+    setTimeout(() => {
+        performCalculation(inputs, selectedResidenceTypes);
+        switchScreen(loadingScreen, resultScreen);
+    }, 1500);
+});
+
+// ========== Step 3: 고급 설정 ==========
+document.getElementById('step3BackBtn').addEventListener('click', () => {
+    switchScreen(step3Screen, step2Screen);
+});
+
+document.getElementById('calculateBtn').addEventListener('click', () => {
+    const inputs = getInputValues();
+    const errors = validateInputs(inputs, selectedResidenceTypes);
+
+    if (errors.length > 0) {
+        showValidationErrors(errors, step3Screen);
+        return;
+    }
+
+    switchScreen(step3Screen, loadingScreen);
+
+    setTimeout(() => {
+        performCalculation(inputs, selectedResidenceTypes);
+        switchScreen(loadingScreen, resultScreen);
+    }, 1500);
+});
 
 // ========== 슬라이더 동기화 ==========
 function syncSliderWithInput(sliderId, inputId) {
@@ -30,7 +112,6 @@ function syncSliderWithInput(sliderId, inputId) {
     });
 }
 
-// 모든 슬라이더 동기화
 syncSliderWithInput('salePriceSlider', 'salePrice');
 syncSliderWithInput('depositPriceSlider', 'depositPrice');
 syncSliderWithInput('monthlyDepositSlider', 'monthlyDeposit');
@@ -40,15 +121,6 @@ syncSliderWithInput('loanRateSlider', 'loanRate');
 syncSliderWithInput('appreciationRateSlider', 'appreciationRate');
 syncSliderWithInput('investmentReturnSlider', 'investmentReturn');
 syncSliderWithInput('holdingPeriodSlider', 'holdingPeriod');
-
-// ========== 고급 설정 토글 ==========
-const advancedToggle = document.getElementById('advancedToggle');
-const advancedInputs = document.getElementById('advancedInputs');
-
-advancedToggle.addEventListener('click', () => {
-    advancedToggle.classList.toggle('expanded');
-    advancedInputs.classList.toggle('expanded');
-});
 
 // ========== 화면 전환 함수 ==========
 function switchScreen(from, to) {
@@ -65,7 +137,7 @@ function getInputValues() {
         salePrice: parseFloat(document.getElementById('salePrice').value),
         depositPrice: parseFloat(document.getElementById('depositPrice').value),
         monthlyDeposit: parseFloat(document.getElementById('monthlyDeposit').value),
-        monthlyRent: parseFloat(document.getElementById('monthlyRent').value) / 10000, // 만원 -> 억원
+        monthlyRent: parseFloat(document.getElementById('monthlyRent').value) / 10000,
         myCash: parseFloat(document.getElementById('myCash').value),
         loanRate: parseFloat(document.getElementById('loanRate').value) / 100,
         acquisitionTax: parseFloat(document.getElementById('acquisitionTax').value) / 100,
@@ -76,10 +148,52 @@ function getInputValues() {
     };
 }
 
-// ========== 선택된 주거 형태 가져오기 ==========
-function getSelectedResidenceTypes() {
-    const checkboxes = document.querySelectorAll('input[name="residence"]:checked');
-    return Array.from(checkboxes).map(cb => cb.value);
+// ========== 입력값 검증 ==========
+function validateInputs(inputs, selectedTypes) {
+    const errors = [];
+
+    if (selectedTypes.includes('buy')) {
+        if (inputs.salePrice <= 0) errors.push('매매가를 입력해주세요.');
+        if (inputs.myCash < 0) errors.push('보유 현금은 0 이상이어야 합니다.');
+    }
+
+    if (selectedTypes.includes('jeonse')) {
+        if (inputs.depositPrice <= 0) errors.push('전세 보증금을 입력해주세요.');
+        if (inputs.myCash < inputs.depositPrice) errors.push('보유 현금이 전세 보증금보다 적습니다.');
+    }
+
+    if (selectedTypes.includes('monthly')) {
+        if (inputs.monthlyRent <= 0) errors.push('월세 임대료를 입력해주세요.');
+        if (inputs.myCash < inputs.monthlyDeposit) errors.push('보유 현금이 월세 보증금보다 적습니다.');
+    }
+
+    return errors;
+}
+
+// ========== 검증 에러 표시 ==========
+function showValidationErrors(errors, screen) {
+    const existingError = screen.querySelector('.validation-error');
+    if (existingError) existingError.remove();
+
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'validation-error';
+    errorDiv.innerHTML = `
+        <div style="background: #FEE2E2; border: 2px solid #EF4444; border-radius: 12px; padding: 20px; margin: 20px 0; animation: fadeInUp 0.5s ease;">
+            <h4 style="color: #DC2626; margin-bottom: 10px; font-size: 1.1rem;">⚠️ 입력값을 확인해주세요</h4>
+            <ul style="color: #991B1B; margin-left: 20px;">
+                ${errors.map(err => `<li>${err}</li>`).join('')}
+            </ul>
+        </div>
+    `;
+
+    const inputSection = screen.querySelector('.input-section');
+    inputSection.insertBefore(errorDiv, inputSection.firstChild);
+
+    setTimeout(() => {
+        errorDiv.style.opacity = '0';
+        errorDiv.style.transform = 'translateY(-20px)';
+        setTimeout(() => errorDiv.remove(), 500);
+    }, 5000);
 }
 
 // ========== 매수 시나리오 계산 ==========
@@ -118,7 +232,6 @@ function calculateBuyScenario(inputs) {
 // ========== 전세 시나리오 계산 ==========
 function calculateJeonseScenario(inputs) {
     const { depositPrice, myCash, investmentReturn, holdingPeriod } = inputs;
-
     const investableAmount = Math.max(0, myCash - depositPrice);
 
     let yearlyData = [];
@@ -141,7 +254,6 @@ function calculateJeonseScenario(inputs) {
 // ========== 월세 시나리오 계산 ==========
 function calculateMonthlyRentScenario(inputs) {
     const { monthlyDeposit, monthlyRent, myCash, investmentReturn, holdingPeriod } = inputs;
-
     const investableAmount = Math.max(0, myCash - monthlyDeposit);
 
     let yearlyData = [];
@@ -163,115 +275,15 @@ function calculateMonthlyRentScenario(inputs) {
     return yearlyData;
 }
 
-// ========== 입력값 검증 ==========
-function validateInputs(inputs, selectedTypes) {
-    const errors = [];
-
-    if (selectedTypes.includes('buy')) {
-        if (inputs.salePrice <= 0) {
-            errors.push('매매가를 입력해주세요.');
-        }
-        if (inputs.myCash < 0) {
-            errors.push('보유 현금은 0 이상이어야 합니다.');
-        }
-    }
-
-    if (selectedTypes.includes('jeonse')) {
-        if (inputs.depositPrice <= 0) {
-            errors.push('전세 보증금을 입력해주세요.');
-        }
-        if (inputs.myCash < inputs.depositPrice) {
-            errors.push('보유 현금이 전세 보증금보다 적습니다.');
-        }
-    }
-
-    if (selectedTypes.includes('monthly')) {
-        if (inputs.monthlyRent <= 0) {
-            errors.push('월세 임대료를 입력해주세요.');
-        }
-        if (inputs.myCash < inputs.monthlyDeposit) {
-            errors.push('보유 현금이 월세 보증금보다 적습니다.');
-        }
-    }
-
-    if (selectedTypes.length === 0) {
-        errors.push('최소 하나의 주거 형태를 선택해주세요.');
-    }
-
-    return errors;
-}
-
-// ========== 계산 실행 ==========
-document.getElementById('calculateBtn').addEventListener('click', () => {
-    const inputs = getInputValues();
-    const selectedTypes = getSelectedResidenceTypes();
-
-    // 입력값 검증
-    const errors = validateInputs(inputs, selectedTypes);
-    if (errors.length > 0) {
-        // 에러를 부드럽게 표시 (alert 대신)
-        showValidationErrors(errors);
-        return;
-    }
-
-    // 로딩 화면으로 전환
-    switchScreen(mainScreen, loadingScreen);
-
-    // 1.5초 후 계산 및 결과 표시
-    setTimeout(() => {
-        performCalculation(inputs, selectedTypes);
-        switchScreen(loadingScreen, resultScreen);
-    }, 1500);
-});
-
-// ========== 검증 에러 표시 (부드러운 방식) ==========
-function showValidationErrors(errors) {
-    const existingError = document.querySelector('.validation-error');
-    if (existingError) {
-        existingError.remove();
-    }
-
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'validation-error';
-    errorDiv.innerHTML = `
-        <div style="background: #FEE2E2; border: 2px solid #EF4444; border-radius: 12px; padding: 20px; margin: 20px 0; animation: fadeInUp 0.5s ease;">
-            <h4 style="color: #DC2626; margin-bottom: 10px; font-size: 1.1rem;">⚠️ 입력값을 확인해주세요</h4>
-            <ul style="color: #991B1B; margin-left: 20px;">
-                ${errors.map(err => `<li>${err}</li>`).join('')}
-            </ul>
-        </div>
-    `;
-
-    const calculateBtn = document.getElementById('calculateBtn');
-    calculateBtn.parentNode.insertBefore(errorDiv, calculateBtn);
-
-    // 3초 후 자동 제거
-    setTimeout(() => {
-        errorDiv.style.opacity = '0';
-        errorDiv.style.transform = 'translateY(-20px)';
-        setTimeout(() => errorDiv.remove(), 500);
-    }, 5000);
-}
-
 // ========== 계산 수행 ==========
 function performCalculation(inputs, selectedTypes) {
     const results = {};
 
-    if (selectedTypes.includes('buy')) {
-        results.buy = calculateBuyScenario(inputs);
-    }
-
-    if (selectedTypes.includes('jeonse')) {
-        results.jeonse = calculateJeonseScenario(inputs);
-    }
-
-    if (selectedTypes.includes('monthly')) {
-        results.monthly = calculateMonthlyRentScenario(inputs);
-    }
+    if (selectedTypes.includes('buy')) results.buy = calculateBuyScenario(inputs);
+    if (selectedTypes.includes('jeonse')) results.jeonse = calculateJeonseScenario(inputs);
+    if (selectedTypes.includes('monthly')) results.monthly = calculateMonthlyRentScenario(inputs);
 
     calculationResults = { inputs, selectedTypes, results };
-
-    // 결과 화면 렌더링
     renderResults();
 }
 
@@ -279,13 +291,11 @@ function performCalculation(inputs, selectedTypes) {
 function renderResults() {
     const { inputs, selectedTypes, results } = calculationResults;
 
-    // 최종 자산 비교
     const finalAssets = {};
     if (results.buy) finalAssets.buy = results.buy[results.buy.length - 1].asset;
     if (results.jeonse) finalAssets.jeonse = results.jeonse[results.jeonse.length - 1].asset;
     if (results.monthly) finalAssets.monthly = results.monthly[results.monthly.length - 1].asset;
 
-    // 최고 수익 옵션 찾기
     const bestOption = Object.keys(finalAssets).reduce((a, b) =>
         finalAssets[a] > finalAssets[b] ? a : b
     );
@@ -296,15 +306,10 @@ function renderResults() {
         monthly: '월세'
     };
 
-    // 판정 렌더링
     renderVerdict(bestOption, finalAssets, optionNames, inputs.holdingPeriod);
-
-    // 그래프 렌더링
     renderComparisonChart();
     renderIndividualChart();
     renderBreakdownChart();
-
-    // 상세 분석 렌더링
     renderDetailedAnalysis();
 }
 
@@ -351,9 +356,7 @@ function renderComparisonChart() {
     const { results } = calculationResults;
     const ctx = document.getElementById('comparisonChart').getContext('2d');
 
-    if (chartInstances.comparison) {
-        chartInstances.comparison.destroy();
-    }
+    if (chartInstances.comparison) chartInstances.comparison.destroy();
 
     const datasets = [];
     const colors = {
@@ -452,11 +455,8 @@ function renderIndividualChart() {
     const { results } = calculationResults;
     const ctx = document.getElementById('individualChart').getContext('2d');
 
-    if (chartInstances.individual) {
-        chartInstances.individual.destroy();
-    }
+    if (chartInstances.individual) chartInstances.individual.destroy();
 
-    // 각 옵션별 연도별 자산 증가율 표시
     const datasets = [];
     const colors = {
         buy: 'rgb(239, 68, 68)',
@@ -538,11 +538,8 @@ function renderBreakdownChart() {
     const { results, inputs } = calculationResults;
     const ctx = document.getElementById('breakdownChart').getContext('2d');
 
-    if (chartInstances.breakdown) {
-        chartInstances.breakdown.destroy();
-    }
+    if (chartInstances.breakdown) chartInstances.breakdown.destroy();
 
-    // 최종 연도의 비용 구성 비교
     const breakdownData = {};
 
     Object.keys(results).forEach(type => {
@@ -637,7 +634,7 @@ function renderBreakdownChart() {
 
 // ========== 상세 분석 렌더링 ==========
 function renderDetailedAnalysis() {
-    const { results, inputs, selectedTypes } = calculationResults;
+    const { results, inputs } = calculationResults;
     const detailedContent = document.getElementById('detailedContent');
 
     let analysisHTML = '';
@@ -748,9 +745,9 @@ chartTabs.forEach(tab => {
     });
 });
 
-// ========== 뒤로 가기 버튼 ==========
+// ========== 뒤로 가기 ==========
 document.getElementById('backBtn').addEventListener('click', () => {
-    switchScreen(resultScreen, mainScreen);
+    switchScreen(resultScreen, step1Screen);
 });
 
 // ========== 공유 버튼 ==========
@@ -762,7 +759,6 @@ document.getElementById('shareBtn').addEventListener('click', () => {
             url: window.location.href
         }).catch(err => console.log('공유 실패:', err));
     } else {
-        // 클립보드에 복사
         navigator.clipboard.writeText(window.location.href).then(() => {
             const btn = document.getElementById('shareBtn');
             const originalHTML = btn.innerHTML;
@@ -774,7 +770,7 @@ document.getElementById('shareBtn').addEventListener('click', () => {
     }
 });
 
-// ========== 이미지 저장 버튼 ==========
+// ========== 이미지 저장 ==========
 document.getElementById('saveImageBtn').addEventListener('click', () => {
     const resultContainer = document.querySelector('#resultScreen .container');
     const saveBtn = document.getElementById('saveImageBtn');
