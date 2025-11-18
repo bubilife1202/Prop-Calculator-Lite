@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>집, 살까 말까? | 부동산 매수 vs 전세 계산기</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <header class="header">
+            <h1>🏠 집, 살까 말까?</h1>
+            <p class="subtitle">매수 vs 전세, 3초 만에 손익 비교</p>
+        </header>
+
+        <!-- 모드 선택 -->
+        <div class="mode-selector">
+            <button id="simpleMode" class="mode-btn active">🟢 간편 모드</button>
+            <button id="advancedMode" class="mode-btn">🔴 정밀 모드</button>
+        </div>
+
+        <!-- 입력 폼 -->
+        <div class="input-section">
+            <h2>📝 기본 정보 입력</h2>
+
+            <!-- 간편 모드 입력 -->
+            <div class="input-group">
+                <label for="salePrice">매매가 (억원)</label>
+                <div class="slider-container">
+                    <input type="range" id="salePriceSlider" min="1" max="30" step="0.5" value="8">
+                    <input type="number" id="salePrice" min="0" step="0.1" value="8">
+                    <span class="unit">억원</span>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="depositPrice">전세가 (억원)</label>
+                <div class="slider-container">
+                    <input type="range" id="depositPriceSlider" min="1" max="25" step="0.5" value="5">
+                    <input type="number" id="depositPrice" min="0" step="0.1" value="5">
+                    <span class="unit">억원</span>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="myCash">내 현금 (억원)</label>
+                <div class="slider-container">
+                    <input type="range" id="myCashSlider" min="0" max="10" step="0.5" value="3">
+                    <input type="number" id="myCash" min="0" step="0.1" value="3">
+                    <span class="unit">억원</span>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="loanRate">대출 금리 (%)</label>
+                <div class="slider-container">
+                    <input type="range" id="loanRateSlider" min="1" max="8" step="0.1" value="4">
+                    <input type="number" id="loanRate" min="0" step="0.1" value="4">
+                    <span class="unit">%</span>
+                </div>
+            </div>
+
+            <!-- 고급 모드 추가 입력 (숨김) -->
+            <div id="advancedInputs" class="advanced-inputs" style="display: none;">
+                <h3>🔍 상세 설정</h3>
+
+                <div class="input-group">
+                    <label for="acquisitionTax">취득세 + 중개수수료 (%)</label>
+                    <input type="number" id="acquisitionTax" min="0" step="0.1" value="4.5">
+                    <span class="unit">%</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="propertyTax">연간 보유세 (만원)</label>
+                    <input type="number" id="propertyTax" min="0" step="10" value="100">
+                    <span class="unit">만원/년</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="appreciationRate">집값 예상 상승률 (%/년)</label>
+                    <div class="slider-container">
+                        <input type="range" id="appreciationRateSlider" min="-5" max="15" step="0.5" value="2">
+                        <input type="number" id="appreciationRate" min="-10" step="0.1" value="2">
+                        <span class="unit">%</span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="investmentReturn">투자 기회비용 수익률 (%/년)</label>
+                    <div class="slider-container">
+                        <input type="range" id="investmentReturnSlider" min="0" max="15" step="0.5" value="8">
+                        <input type="number" id="investmentReturn" min="0" step="0.1" value="8">
+                        <span class="unit">%</span>
+                    </div>
+                    <small>전세 살면서 투자했을 때 예상 수익률 (예: S&P500 평균 8%)</small>
+                </div>
+
+                <div class="input-group">
+                    <label for="holdingPeriod">보유 기간 (년)</label>
+                    <div class="slider-container">
+                        <input type="range" id="holdingPeriodSlider" min="1" max="30" step="1" value="10">
+                        <input type="number" id="holdingPeriod" min="1" step="1" value="10">
+                        <span class="unit">년</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 계산 버튼 -->
+            <button id="calculateBtn" class="calculate-btn">💡 손익 계산하기</button>
+        </div>
+
+        <!-- 로딩 화면 (광고 배치 영역) -->
+        <div id="loadingScreen" class="loading-screen" style="display: none;">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <p>계산 중입니다...</p>
+                <!-- 광고 영역 -->
+                <div class="ad-container">
+                    <p style="color: #999; font-size: 12px;">Advertisement</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 결과 화면 -->
+        <div id="resultSection" class="result-section" style="display: none;">
+            <h2>📊 분석 결과</h2>
+
+            <!-- 간단 결과 (간편 모드) -->
+            <div id="simpleResult" class="simple-result">
+                <div class="verdict-card">
+                    <h3>📢 진단 결과</h3>
+                    <p id="verdictText" class="verdict-text"></p>
+                    <p id="assetDiff" class="asset-diff"></p>
+                    <p id="tipText" class="tip-text">💡 팁: <span id="tip"></span></p>
+                </div>
+            </div>
+
+            <!-- 상세 결과 (고급 모드 - 나중에 그래프 추가) -->
+            <div id="advancedResult" class="advanced-result" style="display: none;">
+                <div class="chart-container">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 공유 버튼 -->
+            <div class="share-buttons">
+                <button id="shareBtn" class="share-btn">🔗 결과 공유하기</button>
+                <button id="saveImageBtn" class="share-btn">📷 이미지로 저장</button>
+            </div>
+
+            <!-- 광고 영역 -->
+            <div class="ad-container-bottom">
+                <p style="color: #999; font-size: 12px;">Advertisement</p>
+                <!-- AdSense 코드 들어갈 영역 -->
+            </div>
+        </div>
+
+        <!-- 푸터 -->
+        <footer class="footer">
+            <p>본 계산기는 참고용이며, 실제 투자 결정 시 전문가와 상담하시기 바랍니다.</p>
+            <p>Made with ❤️ for smart property investors</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="calculator.js"></script>
+</body>
+</html>
