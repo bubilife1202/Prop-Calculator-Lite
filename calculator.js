@@ -638,31 +638,116 @@ function renderDetailedAnalysis() {
     const detailedContent = document.getElementById('detailedContent');
 
     let analysisHTML = '';
+    const initialCapital = inputs.salePrice;
+
+    // 비교 요약 테이블 추가
+    analysisHTML += `
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 16px; margin-bottom: 30px; color: white;">
+            <h4 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 20px; text-align: center;">💰 한눈에 보는 비교</h4>
+            <div style="background: rgba(255, 255, 255, 0.95); padding: 20px; border-radius: 12px; color: #1F2937;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #E5E7EB;">
+                            <th style="padding: 12px; text-align: left; font-size: 0.95rem; color: #6B7280;">항목</th>
+                            ${results.buy ? '<th style="padding: 12px; text-align: right; font-size: 0.95rem; color: #6B7280;">🏠 매수</th>' : ''}
+                            ${results.jeonse ? '<th style="padding: 12px; text-align: right; font-size: 0.95rem; color: #6B7280;">🔑 전세</th>' : ''}
+                            ${results.monthly ? '<th style="padding: 12px; text-align: right; font-size: 0.95rem; color: #6B7280;">📅 월세</th>' : ''}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid #F3F4F6;">
+                            <td style="padding: 12px; font-weight: 600;">초기 투자</td>
+                            ${results.buy ? `<td style="padding: 12px; text-align: right;">${initialCapital.toFixed(1)}억</td>` : ''}
+                            ${results.jeonse ? `<td style="padding: 12px; text-align: right;">${initialCapital.toFixed(1)}억</td>` : ''}
+                            ${results.monthly ? `<td style="padding: 12px; text-align: right;">${initialCapital.toFixed(1)}억</td>` : ''}
+                        </tr>
+                        <tr style="border-bottom: 1px solid #F3F4F6;">
+                            <td style="padding: 12px; font-weight: 600;">${inputs.holdingPeriod}년 후 자산</td>
+                            ${results.buy ? `<td style="padding: 12px; text-align: right; font-weight: 700; color: #DC2626;">${results.buy[results.buy.length - 1].asset.toFixed(2)}억</td>` : ''}
+                            ${results.jeonse ? `<td style="padding: 12px; text-align: right; font-weight: 700; color: #1E40AF;">${results.jeonse[results.jeonse.length - 1].asset.toFixed(2)}억</td>` : ''}
+                            ${results.monthly ? `<td style="padding: 12px; text-align: right; font-weight: 700; color: #047857;">${results.monthly[results.monthly.length - 1].asset.toFixed(2)}억</td>` : ''}
+                        </tr>
+                        <tr style="background: #F9FAFB;">
+                            <td style="padding: 12px; font-weight: 600;">순이익/손실</td>
+                            ${results.buy ? `<td style="padding: 12px; text-align: right; font-weight: 700; color: ${(results.buy[results.buy.length - 1].asset - initialCapital) >= 0 ? '#10B981' : '#EF4444'};">${(results.buy[results.buy.length - 1].asset - initialCapital) >= 0 ? '+' : ''}${(results.buy[results.buy.length - 1].asset - initialCapital).toFixed(2)}억</td>` : ''}
+                            ${results.jeonse ? `<td style="padding: 12px; text-align: right; font-weight: 700; color: ${(results.jeonse[results.jeonse.length - 1].asset - initialCapital) >= 0 ? '#10B981' : '#EF4444'};">${(results.jeonse[results.jeonse.length - 1].asset - initialCapital) >= 0 ? '+' : ''}${(results.jeonse[results.jeonse.length - 1].asset - initialCapital).toFixed(2)}억</td>` : ''}
+                            ${results.monthly ? `<td style="padding: 12px; text-align: right; font-weight: 700; color: ${(results.monthly[results.monthly.length - 1].asset - initialCapital) >= 0 ? '#10B981' : '#EF4444'};">${(results.monthly[results.monthly.length - 1].asset - initialCapital) >= 0 ? '+' : ''}${(results.monthly[results.monthly.length - 1].asset - initialCapital).toFixed(2)}억</td>` : ''}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
 
     if (results.buy) {
         const finalData = results.buy[results.buy.length - 1];
-        const initialCapital = inputs.salePrice;
-        const roi = ((finalData.asset - initialCapital) / initialCapital * 100).toFixed(1);
+        const equity = initialCapital * 0.3; // 자기자본 30%
+        const loan = initialCapital * 0.7; // 대출 70%
+        const profit = finalData.asset - initialCapital;
+        const houseValueGain = finalData.houseValue - inputs.salePrice;
 
         analysisHTML += `
-            <div style="background: #FEF2F2; border-left: 4px solid #EF4444; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-                <h4 style="color: #DC2626; margin-bottom: 15px; font-size: 1.2rem;">🏠 매수 상세 분석</h4>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                    <div>
-                        <p style="color: #991B1B; font-size: 0.9rem;">최종 자산</p>
-                        <p style="font-size: 1.3rem; font-weight: 700; color: #DC2626;">${finalData.asset.toFixed(2)}억</p>
+            <div style="background: white; border: 3px solid #EF4444; padding: 25px; border-radius: 16px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <h4 style="color: #DC2626; margin-bottom: 20px; font-size: 1.3rem; font-weight: 800; display: flex; align-items: center; gap: 10px;">
+                    🏠 매수 상세 분석
+                </h4>
+
+                <div style="background: #FEF2F2; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                    <h5 style="color: #991B1B; font-size: 1.1rem; margin-bottom: 15px; font-weight: 700;">💰 초기 투자 구조</h5>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                        <div>
+                            <p style="color: #991B1B; font-size: 0.85rem; margin-bottom: 5px;">매매가</p>
+                            <p style="font-size: 1.2rem; font-weight: 700; color: #DC2626;">${inputs.salePrice.toFixed(1)}억</p>
+                        </div>
+                        <div>
+                            <p style="color: #991B1B; font-size: 0.85rem; margin-bottom: 5px;">자기자본 (30%)</p>
+                            <p style="font-size: 1.2rem; font-weight: 700; color: #DC2626;">${equity.toFixed(1)}억</p>
+                        </div>
+                        <div>
+                            <p style="color: #991B1B; font-size: 0.85rem; margin-bottom: 5px;">대출 (70%)</p>
+                            <p style="font-size: 1.2rem; font-weight: 700; color: #DC2626;">${loan.toFixed(1)}억</p>
+                        </div>
+                        <div>
+                            <p style="color: #991B1B; font-size: 0.85rem; margin-bottom: 5px;">취득세 등</p>
+                            <p style="font-size: 1.2rem; font-weight: 700; color: #DC2626;">${finalData.costs.toFixed(2)}억</p>
+                        </div>
                     </div>
-                    <div>
-                        <p style="color: #991B1B; font-size: 0.9rem;">집값 상승</p>
-                        <p style="font-size: 1.3rem; font-weight: 700; color: #DC2626;">${((finalData.houseValue / inputs.salePrice - 1) * 100).toFixed(1)}%</p>
+                </div>
+
+                <div style="background: #FEE2E2; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                    <h5 style="color: #991B1B; font-size: 1.1rem; margin-bottom: 15px; font-weight: 700;">📈 ${inputs.holdingPeriod}년간 수익/비용</h5>
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="color: #7C2D12;">집값 상승</span>
+                            <span style="font-weight: 700; color: ${houseValueGain >= 0 ? '#10B981' : '#EF4444'};">${houseValueGain >= 0 ? '+' : ''}${houseValueGain.toFixed(2)}억 (${((finalData.houseValue / inputs.salePrice - 1) * 100).toFixed(1)}%)</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="color: #7C2D12;">대출이자 + 보유세</span>
+                            <span style="font-weight: 700; color: #EF4444;">-${(finalData.costs - inputs.salePrice * inputs.acquisitionTax).toFixed(2)}억</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="color: #7C2D12;">남은 대출금</span>
+                            <span style="font-weight: 700; color: #EF4444;">-${loan.toFixed(1)}억</span>
+                        </div>
                     </div>
-                    <div>
-                        <p style="color: #991B1B; font-size: 0.9rem;">투자 수익률 (ROI)</p>
-                        <p style="font-size: 1.3rem; font-weight: 700; color: #DC2626;">${roi}%</p>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #FEE2E2 0%, #FEF2F2 100%); padding: 20px; border-radius: 12px;">
+                    <h5 style="color: #991B1B; font-size: 1.1rem; margin-bottom: 15px; font-weight: 700;">🎯 최종 결과</h5>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: white; border-radius: 8px; margin-bottom: 10px;">
+                        <span style="font-size: 1rem; color: #6B7280;">최종 순자산</span>
+                        <span style="font-size: 1.5rem; font-weight: 800; color: #DC2626;">${finalData.asset.toFixed(2)}억</span>
                     </div>
-                    <div>
-                        <p style="color: #991B1B; font-size: 0.9rem;">누적 비용</p>
-                        <p style="font-size: 1.3rem; font-weight: 700; color: #DC2626;">${finalData.costs.toFixed(2)}억</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: white; border-radius: 8px;">
+                        <span style="font-size: 1rem; color: #6B7280;">순이익/손실</span>
+                        <span style="font-size: 1.5rem; font-weight: 800; color: ${profit >= 0 ? '#10B981' : '#EF4444'};">${profit >= 0 ? '+' : ''}${profit.toFixed(2)}억</span>
+                    </div>
+                    <div style="margin-top: 15px; padding: 15px; background: rgba(220, 38, 38, 0.1); border-radius: 8px; border-left: 4px solid #DC2626;">
+                        <p style="font-size: 0.95rem; color: #7C2D12; line-height: 1.6;">
+                            💡 <strong>이렇게 계산했어요:</strong> 집을 ${inputs.salePrice.toFixed(1)}억에 구매하고, ${inputs.holdingPeriod}년 동안 ${finalData.houseValue.toFixed(2)}억으로 상승했습니다.
+                            하지만 ${inputs.holdingPeriod}년간 대출이자와 세금으로 ${(finalData.costs - inputs.salePrice * inputs.acquisitionTax).toFixed(2)}억이 들었고,
+                            대출금 ${loan.toFixed(1)}억을 갚아야 해서 최종적으로 ${profit >= 0 ? profit.toFixed(2) + '억 이익' : Math.abs(profit).toFixed(2) + '억 손해'}입니다.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -671,29 +756,73 @@ function renderDetailedAnalysis() {
 
     if (results.jeonse) {
         const finalData = results.jeonse[results.jeonse.length - 1];
-        const initialCapital = inputs.salePrice;
         const investedAmount = initialCapital - inputs.depositPrice;
-        const roi = ((finalData.asset - initialCapital) / initialCapital * 100).toFixed(1);
+        const profit = finalData.asset - initialCapital;
+        const investmentGain = finalData.investment - investedAmount;
 
         analysisHTML += `
-            <div style="background: #EFF6FF; border-left: 4px solid #3B82F6; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-                <h4 style="color: #1E40AF; margin-bottom: 15px; font-size: 1.2rem;">🔑 전세 상세 분석</h4>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                    <div>
-                        <p style="color: #1E3A8A; font-size: 0.9rem;">최종 자산</p>
-                        <p style="font-size: 1.3rem; font-weight: 700; color: #1E40AF;">${finalData.asset.toFixed(2)}억</p>
+            <div style="background: white; border: 3px solid #3B82F6; padding: 25px; border-radius: 16px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <h4 style="color: #1E40AF; margin-bottom: 20px; font-size: 1.3rem; font-weight: 800; display: flex; align-items: center; gap: 10px;">
+                    🔑 전세 상세 분석
+                </h4>
+
+                <div style="background: #EFF6FF; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                    <h5 style="color: #1E3A8A; font-size: 1.1rem; margin-bottom: 15px; font-weight: 700;">💰 초기 투자 구조</h5>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                        <div>
+                            <p style="color: #1E3A8A; font-size: 0.85rem; margin-bottom: 5px;">초기 자본</p>
+                            <p style="font-size: 1.2rem; font-weight: 700; color: #1E40AF;">${initialCapital.toFixed(1)}억</p>
+                        </div>
+                        <div>
+                            <p style="color: #1E3A8A; font-size: 0.85rem; margin-bottom: 5px;">전세 보증금</p>
+                            <p style="font-size: 1.2rem; font-weight: 700; color: #1E40AF;">${inputs.depositPrice.toFixed(1)}억</p>
+                        </div>
+                        <div>
+                            <p style="color: #1E3A8A; font-size: 0.85rem; margin-bottom: 5px;">투자 금액</p>
+                            <p style="font-size: 1.2rem; font-weight: 700; color: #1E40AF;">${investedAmount.toFixed(1)}억</p>
+                        </div>
+                        <div>
+                            <p style="color: #1E3A8A; font-size: 0.85rem; margin-bottom: 5px;">투자 수익률</p>
+                            <p style="font-size: 1.2rem; font-weight: 700; color: #1E40AF;">${(inputs.investmentReturn * 100).toFixed(1)}%/년</p>
+                        </div>
                     </div>
-                    <div>
-                        <p style="color: #1E3A8A; font-size: 0.9rem;">투자 수익</p>
-                        <p style="font-size: 1.3rem; font-weight: 700; color: #1E40AF;">${(finalData.investment - investedAmount).toFixed(2)}억</p>
+                </div>
+
+                <div style="background: #DBEAFE; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                    <h5 style="color: #1E3A8A; font-size: 1.1rem; margin-bottom: 15px; font-weight: 700;">📈 ${inputs.holdingPeriod}년간 자산 변화</h5>
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="color: #1E40AF;">투자 수익</span>
+                            <span style="font-weight: 700; color: #10B981;">+${investmentGain.toFixed(2)}억</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="color: #1E40AF;">전세 보증금 (돌려받음)</span>
+                            <span style="font-weight: 700; color: #6B7280;">${inputs.depositPrice.toFixed(1)}억</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="color: #1E40AF;">월세 절약</span>
+                            <span style="font-weight: 700; color: #10B981;">매달 임대료 없음</span>
+                        </div>
                     </div>
-                    <div>
-                        <p style="color: #1E3A8A; font-size: 0.9rem;">투자 수익률 (ROI)</p>
-                        <p style="font-size: 1.3rem; font-weight: 700; color: #1E40AF;">${roi}%</p>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #DBEAFE 0%, #EFF6FF 100%); padding: 20px; border-radius: 12px;">
+                    <h5 style="color: #1E3A8A; font-size: 1.1rem; margin-bottom: 15px; font-weight: 700;">🎯 최종 결과</h5>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: white; border-radius: 8px; margin-bottom: 10px;">
+                        <span style="font-size: 1rem; color: #6B7280;">최종 순자산</span>
+                        <span style="font-size: 1.5rem; font-weight: 800; color: #1E40AF;">${finalData.asset.toFixed(2)}억</span>
                     </div>
-                    <div>
-                        <p style="color: #1E3A8A; font-size: 0.9rem;">보증금</p>
-                        <p style="font-size: 1.3rem; font-weight: 700; color: #1E40AF;">${finalData.deposit.toFixed(2)}억</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: white; border-radius: 8px;">
+                        <span style="font-size: 1rem; color: #6B7280;">순이익/손실</span>
+                        <span style="font-size: 1.5rem; font-weight: 800; color: ${profit >= 0 ? '#10B981' : '#EF4444'};">${profit >= 0 ? '+' : ''}${profit.toFixed(2)}억</span>
+                    </div>
+                    <div style="margin-top: 15px; padding: 15px; background: rgba(59, 130, 246, 0.1); border-radius: 8px; border-left: 4px solid #3B82F6;">
+                        <p style="font-size: 0.95rem; color: #1E40AF; line-height: 1.6;">
+                            💡 <strong>이렇게 계산했어요:</strong> ${initialCapital.toFixed(1)}억 중 ${inputs.depositPrice.toFixed(1)}억을 전세 보증금으로 내고,
+                            나머지 ${investedAmount.toFixed(1)}억을 ${(inputs.investmentReturn * 100).toFixed(1)}% 수익률로 투자했습니다.
+                            ${inputs.holdingPeriod}년 후 투자금이 ${finalData.investment.toFixed(2)}억으로 불어났고, 보증금 ${inputs.depositPrice.toFixed(1)}억을 돌려받아
+                            총 ${finalData.asset.toFixed(2)}억이 되어 ${profit >= 0 ? profit.toFixed(2) + '억 이익' : Math.abs(profit).toFixed(2) + '억 손해'}입니다.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -702,28 +831,74 @@ function renderDetailedAnalysis() {
 
     if (results.monthly) {
         const finalData = results.monthly[results.monthly.length - 1];
-        const initialCapital = inputs.salePrice;
-        const roi = ((finalData.asset - initialCapital) / initialCapital * 100).toFixed(1);
+        const investedAmount = initialCapital - inputs.monthlyDeposit;
+        const profit = finalData.asset - initialCapital;
+        const investmentGain = finalData.investment - investedAmount;
+        const totalRent = finalData.rentPaid;
 
         analysisHTML += `
-            <div style="background: #ECFDF5; border-left: 4px solid #10B981; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-                <h4 style="color: #047857; margin-bottom: 15px; font-size: 1.2rem;">📅 월세 상세 분석</h4>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                    <div>
-                        <p style="color: #065F46; font-size: 0.9rem;">최종 자산</p>
-                        <p style="font-size: 1.3rem; font-weight: 700; color: #047857;">${finalData.asset.toFixed(2)}억</p>
+            <div style="background: white; border: 3px solid #10B981; padding: 25px; border-radius: 16px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <h4 style="color: #047857; margin-bottom: 20px; font-size: 1.3rem; font-weight: 800; display: flex; align-items: center; gap: 10px;">
+                    📅 월세 상세 분석
+                </h4>
+
+                <div style="background: #ECFDF5; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                    <h5 style="color: #065F46; font-size: 1.1rem; margin-bottom: 15px; font-weight: 700;">💰 초기 투자 구조</h5>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                        <div>
+                            <p style="color: #065F46; font-size: 0.85rem; margin-bottom: 5px;">초기 자본</p>
+                            <p style="font-size: 1.2rem; font-weight: 700; color: #047857;">${initialCapital.toFixed(1)}억</p>
+                        </div>
+                        <div>
+                            <p style="color: #065F46; font-size: 0.85rem; margin-bottom: 5px;">월세 보증금</p>
+                            <p style="font-size: 1.2rem; font-weight: 700; color: #047857;">${inputs.monthlyDeposit.toFixed(1)}억</p>
+                        </div>
+                        <div>
+                            <p style="color: #065F46; font-size: 0.85rem; margin-bottom: 5px;">투자 금액</p>
+                            <p style="font-size: 1.2rem; font-weight: 700; color: #047857;">${investedAmount.toFixed(1)}억</p>
+                        </div>
+                        <div>
+                            <p style="color: #065F46; font-size: 0.85rem; margin-bottom: 5px;">월 임대료</p>
+                            <p style="font-size: 1.2rem; font-weight: 700; color: #047857;">${(inputs.monthlyRent * 10000).toFixed(0)}만원</p>
+                        </div>
                     </div>
-                    <div>
-                        <p style="color: #065F46; font-size: 0.9rem;">누적 월세</p>
-                        <p style="font-size: 1.3rem; font-weight: 700; color: #047857;">${finalData.rentPaid.toFixed(2)}억</p>
+                </div>
+
+                <div style="background: #D1FAE5; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                    <h5 style="color: #065F46; font-size: 1.1rem; margin-bottom: 15px; font-weight: 700;">📈 ${inputs.holdingPeriod}년간 수익/비용</h5>
+                    <div style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="color: #047857;">투자 수익</span>
+                            <span style="font-weight: 700; color: #10B981;">+${investmentGain.toFixed(2)}억</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="color: #047857;">누적 월세 지출</span>
+                            <span style="font-weight: 700; color: #EF4444;">-${totalRent.toFixed(2)}억 (${(inputs.monthlyRent * 10000).toFixed(0)}만원 × ${inputs.holdingPeriod * 12}개월)</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="color: #047857;">월세 보증금 (돌려받음)</span>
+                            <span style="font-weight: 700; color: #6B7280;">${inputs.monthlyDeposit.toFixed(1)}억</span>
+                        </div>
                     </div>
-                    <div>
-                        <p style="color: #065F46; font-size: 0.9rem;">투자 수익률 (ROI)</p>
-                        <p style="font-size: 1.3rem; font-weight: 700; color: #047857;">${roi}%</p>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #D1FAE5 0%, #ECFDF5 100%); padding: 20px; border-radius: 12px;">
+                    <h5 style="color: #065F46; font-size: 1.1rem; margin-bottom: 15px; font-weight: 700;">🎯 최종 결과</h5>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: white; border-radius: 8px; margin-bottom: 10px;">
+                        <span style="font-size: 1rem; color: #6B7280;">최종 순자산</span>
+                        <span style="font-size: 1.5rem; font-weight: 800; color: #047857;">${finalData.asset.toFixed(2)}억</span>
                     </div>
-                    <div>
-                        <p style="color: #065F46; font-size: 0.9rem;">월 평균 비용</p>
-                        <p style="font-size: 1.3rem; font-weight: 700; color: #047857;">${(inputs.monthlyRent * 10000).toFixed(0)}만원</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: white; border-radius: 8px;">
+                        <span style="font-size: 1rem; color: #6B7280;">순이익/손실</span>
+                        <span style="font-size: 1.5rem; font-weight: 800; color: ${profit >= 0 ? '#10B981' : '#EF4444'};">${profit >= 0 ? '+' : ''}${profit.toFixed(2)}억</span>
+                    </div>
+                    <div style="margin-top: 15px; padding: 15px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border-left: 4px solid #10B981;">
+                        <p style="font-size: 0.95rem; color: #047857; line-height: 1.6;">
+                            💡 <strong>이렇게 계산했어요:</strong> ${initialCapital.toFixed(1)}억 중 ${inputs.monthlyDeposit.toFixed(1)}억을 월세 보증금으로 내고,
+                            나머지 ${investedAmount.toFixed(1)}억을 투자했습니다. ${inputs.holdingPeriod}년간 투자금이 ${finalData.investment.toFixed(2)}억으로 불어났지만,
+                            매달 ${(inputs.monthlyRent * 10000).toFixed(0)}만원씩 총 ${totalRent.toFixed(2)}억을 월세로 냈습니다.
+                            보증금 ${inputs.monthlyDeposit.toFixed(1)}억을 돌려받아 최종적으로 ${profit >= 0 ? profit.toFixed(2) + '억 이익' : Math.abs(profit).toFixed(2) + '억 손해'}입니다.
+                        </p>
                     </div>
                 </div>
             </div>
