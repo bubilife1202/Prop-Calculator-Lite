@@ -100,16 +100,36 @@ function syncSliderWithInput(sliderId, inputId) {
 
     if (!slider || !input) return;
 
+    // 슬라이더 변경 → 입력 필드 업데이트
     slider.addEventListener('input', (e) => {
         input.value = e.target.value;
     });
 
+    // 입력 필드 변경 → 슬라이더 업데이트
     input.addEventListener('input', (e) => {
         const value = parseFloat(e.target.value);
         if (!isNaN(value)) {
-            slider.value = value;
+            const min = parseFloat(slider.min);
+            const max = parseFloat(slider.max);
+
+            // 슬라이더 범위 내로 제한
+            if (value < min) {
+                slider.value = min;
+            } else if (value > max) {
+                slider.value = max;
+            } else {
+                slider.value = value;
+            }
         }
     });
+
+    // 초기값 동기화
+    if (input.value) {
+        const value = parseFloat(input.value);
+        if (!isNaN(value)) {
+            slider.value = Math.min(Math.max(value, parseFloat(slider.min)), parseFloat(slider.max));
+        }
+    }
 }
 
 syncSliderWithInput('salePriceSlider', 'salePrice');
