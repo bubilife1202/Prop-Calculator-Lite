@@ -1383,3 +1383,29 @@ body {
         padding: 0 15px;
     }
 }
+
+/* ========== AdSense 광고 컨테이너 ========== */
+.ad-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ad-container ins {
+    min-height: 90px;
+}
+
+@media (max-width: 768px) {
+    .ad-container {
+        margin: 20px auto;
+        padding: 15px;
+    }
+}
