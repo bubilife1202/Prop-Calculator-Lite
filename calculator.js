@@ -40,6 +40,25 @@ step1NextBtn.addEventListener('click', () => {
         selectedResidenceTypes.includes('monthly') ? 'block' : 'none';
 
     switchScreen(step1Screen, step2Screen);
+
+    // display:block으로 바뀐 직후 슬라이더 강제 초기화
+    setTimeout(() => {
+        if (selectedResidenceTypes.includes('buy')) {
+            // Set에서 제거 후 재초기화
+            initializedSliders.delete('salePriceSlider-salePrice');
+            syncSliderWithInput('salePriceSlider', 'salePrice');
+        }
+        if (selectedResidenceTypes.includes('jeonse')) {
+            initializedSliders.delete('depositPriceSlider-depositPrice');
+            syncSliderWithInput('depositPriceSlider', 'depositPrice');
+        }
+        if (selectedResidenceTypes.includes('monthly')) {
+            initializedSliders.delete('monthlyDepositSlider-monthlyDeposit');
+            syncSliderWithInput('monthlyDepositSlider', 'monthlyDeposit');
+            initializedSliders.delete('monthlyRentSlider-monthlyRent');
+            syncSliderWithInput('monthlyRentSlider', 'monthlyRent');
+        }
+    }, 100);
 });
 
 // ========== Step 2: 기본 정보 입력 ==========
