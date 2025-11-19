@@ -86,39 +86,8 @@ residenceCheckboxes.forEach(checkbox => {
     });
 });
 
-// ========== 프리셋 버튼 ==========
-const presetButtons = document.querySelectorAll('.preset-btn');
-presetButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        const presetKey = btn.getAttribute('data-preset');
-        const preset = presets[presetKey];
-
-        if (!preset) return;
-
-        // 주거 형태 체크박스 설정
-        residenceCheckboxes.forEach(cb => {
-            cb.checked = preset.residenceTypes.includes(cb.value);
-        });
-
-        // 다음 버튼 활성화
-        step1NextBtn.disabled = false;
-
-        // 입력 필드 설정
-        document.getElementById('salePrice').value = preset.salePrice;
-        document.getElementById('depositPrice').value = preset.depositPrice;
-        document.getElementById('monthlyDeposit').value = preset.monthlyDeposit;
-        document.getElementById('monthlyRent').value = preset.monthlyRent;
-        document.getElementById('loanRate').value = preset.loanRate;
-        document.getElementById('acquisitionTax').value = preset.acquisitionTax;
-        document.getElementById('propertyTax').value = preset.propertyTax;
-        document.getElementById('appreciationRate').value = preset.appreciationRate;
-        document.getElementById('investmentReturn').value = preset.investmentReturn;
-        document.getElementById('holdingPeriod').value = preset.holdingPeriod;
-
-        // Step 2로 바로 이동
-        step1NextBtn.click();
-    });
-});
+// ========== 프리셋 버튼 (DOMContentLoaded 후 초기화) ==========
+// 프리셋 버튼은 DOMContentLoaded에서 초기화됨
 
 // Step 1 -> Step 2
 step1NextBtn.addEventListener('click', () => {
@@ -281,6 +250,54 @@ document.addEventListener('DOMContentLoaded', function() {
     setupSlider('holdingPeriodSlider', 'holdingPeriod');
 
     console.log('✅ DOMContentLoaded: 모든 슬라이더 설정 완료');
+
+    // 프리셋 버튼 초기화
+    const presetButtons = document.querySelectorAll('.preset-btn');
+    console.log(`🔍 프리셋 버튼 개수: ${presetButtons.length}`);
+
+    presetButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            console.log('🎯 프리셋 버튼 클릭됨!');
+            const presetKey = btn.getAttribute('data-preset');
+            const preset = presets[presetKey];
+
+            if (!preset) {
+                console.error(`프리셋을 찾을 수 없습니다: ${presetKey}`);
+                return;
+            }
+
+            console.log(`📌 선택된 프리셋: ${preset.name}`);
+
+            // 주거 형태 체크박스 설정
+            const residenceCheckboxes = document.querySelectorAll('input[name="residence"]');
+            residenceCheckboxes.forEach(cb => {
+                cb.checked = preset.residenceTypes.includes(cb.value);
+            });
+
+            // 다음 버튼 활성화
+            const step1NextBtn = document.getElementById('step1NextBtn');
+            step1NextBtn.disabled = false;
+
+            // 입력 필드 설정
+            document.getElementById('salePrice').value = preset.salePrice;
+            document.getElementById('depositPrice').value = preset.depositPrice;
+            document.getElementById('monthlyDeposit').value = preset.monthlyDeposit;
+            document.getElementById('monthlyRent').value = preset.monthlyRent;
+            document.getElementById('loanRate').value = preset.loanRate;
+            document.getElementById('acquisitionTax').value = preset.acquisitionTax;
+            document.getElementById('propertyTax').value = preset.propertyTax;
+            document.getElementById('appreciationRate').value = preset.appreciationRate;
+            document.getElementById('investmentReturn').value = preset.investmentReturn;
+            document.getElementById('holdingPeriod').value = preset.holdingPeriod;
+
+            console.log('✅ 프리셋 값 설정 완료, Step 2로 이동');
+
+            // Step 2로 바로 이동
+            step1NextBtn.click();
+        });
+    });
+
+    console.log('✅ 프리셋 버튼 이벤트 리스너 등록 완료');
 });
 
 // ========== 화면 전환 함수 ==========

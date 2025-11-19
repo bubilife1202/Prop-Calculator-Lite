@@ -1203,6 +1203,8 @@ body {
     cursor: pointer;
     transition: var(--transition);
     text-align: left;
+    position: relative;
+    z-index: 10;
 }
 
 .preset-btn:hover {
