@@ -27,7 +27,7 @@
     --gray-900: #111827;
 
     /* 그라데이션 */
-    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-primary: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #EC4899 100%);
     --gradient-secondary: linear-gradient(135deg, #10B981 0%, #059669 100%);
 
     /* 그림자 */
@@ -150,6 +150,7 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 15px;
+    margin-bottom: 30px;
 }
 
 .residence-option {
