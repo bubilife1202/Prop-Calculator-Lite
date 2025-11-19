@@ -1165,3 +1165,221 @@ body {
         padding: 10px 20px;
     }
 }
+
+/* ========== 프리셋 섹션 ========== */
+.preset-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow-lg);
+    animation: fadeInUp 0.6s ease;
+}
+
+.preset-section h3 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--gray-800);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.preset-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.preset-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 20px;
+    background: white;
+    border: 2px solid var(--gray-200);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: left;
+}
+
+.preset-btn:hover {
+    border-color: var(--primary);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.preset-icon {
+    font-size: 2rem;
+}
+
+.preset-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gray-800);
+}
+
+.preset-desc {
+    font-size: 0.9rem;
+    color: var(--gray-500);
+}
+
+/* ========== Divider ========== */
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 30px 0;
+    position: relative;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.divider span {
+    padding: 0 20px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* ========== 히스토리 섹션 ========== */
+.history-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: var(--shadow-md);
+}
+
+.history-section h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 15px;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: white;
+    border: 2px solid var(--gray-100);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.history-item:hover {
+    border-color: var(--primary);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+    transform: translateX(5px);
+}
+
+.history-info {
+    flex: 1;
+}
+
+.history-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 5px;
+}
+
+.history-date {
+    font-size: 0.85rem;
+    color: var(--gray-500);
+}
+
+.history-result {
+    text-align: right;
+}
+
+.history-winner {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 3px;
+}
+
+.history-amount {
+    font-size: 0.9rem;
+    color: var(--gray-600);
+}
+
+/* ========== 카운트업 애니메이션 ========== */
+@keyframes countUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.count-up {
+    animation: countUp 0.6s ease;
+}
+
+/* ========== 반응형: 프리셋 & 히스토리 ========== */
+@media (max-width: 768px) {
+    .preset-section {
+        padding: 20px;
+    }
+
+    .preset-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .preset-btn {
+        padding: 15px;
+    }
+
+    .history-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .history-result {
+        text-align: left;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .preset-section h3 {
+        font-size: 1.2rem;
+    }
+
+    .preset-title {
+        font-size: 1rem;
+    }
+
+    .preset-desc {
+        font-size: 0.85rem;
+    }
+
+    .divider span {
+        font-size: 0.9rem;
+        padding: 0 15px;
+    }
+}

@@ -13,6 +13,66 @@ let chartInstances = {
 };
 let calculationResults = null;
 
+// ========== 프리셋 데이터 ==========
+const presets = {
+    gangnam: {
+        name: '서울 강남 신혼부부',
+        residenceTypes: ['buy', 'jeonse'],
+        salePrice: 8,
+        depositPrice: 5,
+        monthlyDeposit: 1,
+        monthlyRent: 150,
+        loanRate: 4.5,
+        acquisitionTax: 4.5,
+        propertyTax: 150,
+        appreciationRate: 3,
+        investmentReturn: 8,
+        holdingPeriod: 10
+    },
+    pangyo: {
+        name: '경기 판교 IT직장인',
+        residenceTypes: ['buy', 'monthly'],
+        salePrice: 10,
+        depositPrice: 3,
+        monthlyDeposit: 2,
+        monthlyRent: 200,
+        loanRate: 4.3,
+        acquisitionTax: 4.5,
+        propertyTax: 200,
+        appreciationRate: 2.5,
+        investmentReturn: 10,
+        holdingPeriod: 7
+    },
+    busan: {
+        name: '부산 해운대 은퇴준비',
+        residenceTypes: ['buy', 'jeonse'],
+        salePrice: 5,
+        depositPrice: 3,
+        monthlyDeposit: 1,
+        monthlyRent: 100,
+        loanRate: 4,
+        acquisitionTax: 4.5,
+        propertyTax: 80,
+        appreciationRate: 2,
+        investmentReturn: 7,
+        holdingPeriod: 15
+    },
+    local: {
+        name: '지방 소도시 실수요',
+        residenceTypes: ['buy', 'jeonse'],
+        salePrice: 3,
+        depositPrice: 1.5,
+        monthlyDeposit: 0.5,
+        monthlyRent: 60,
+        loanRate: 3.8,
+        acquisitionTax: 4.5,
+        propertyTax: 50,
+        appreciationRate: 1,
+        investmentReturn: 6,
+        holdingPeriod: 20
+    }
+};
+
 // ========== Step 1: 주거 형태 선택 ==========
 const residenceCheckboxes = document.querySelectorAll('input[name="residence"]');
 const step1NextBtn = document.getElementById('step1NextBtn');
@@ -23,6 +83,40 @@ residenceCheckboxes.forEach(checkbox => {
         const checked = document.querySelectorAll('input[name="residence"]:checked');
         // 최소 2개 선택해야 다음 버튼 활성화
         step1NextBtn.disabled = checked.length < 2;
+    });
+});
+
+// ========== 프리셋 버튼 ==========
+const presetButtons = document.querySelectorAll('.preset-btn');
+presetButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const presetKey = btn.getAttribute('data-preset');
+        const preset = presets[presetKey];
+
+        if (!preset) return;
+
+        // 주거 형태 체크박스 설정
+        residenceCheckboxes.forEach(cb => {
+            cb.checked = preset.residenceTypes.includes(cb.value);
+        });
+
+        // 다음 버튼 활성화
+        step1NextBtn.disabled = false;
+
+        // 입력 필드 설정
+        document.getElementById('salePrice').value = preset.salePrice;
+        document.getElementById('depositPrice').value = preset.depositPrice;
+        document.getElementById('monthlyDeposit').value = preset.monthlyDeposit;
+        document.getElementById('monthlyRent').value = preset.monthlyRent;
+        document.getElementById('loanRate').value = preset.loanRate;
+        document.getElementById('acquisitionTax').value = preset.acquisitionTax;
+        document.getElementById('propertyTax').value = preset.propertyTax;
+        document.getElementById('appreciationRate').value = preset.appreciationRate;
+        document.getElementById('investmentReturn').value = preset.investmentReturn;
+        document.getElementById('holdingPeriod').value = preset.holdingPeriod;
+
+        // Step 2로 바로 이동
+        step1NextBtn.click();
     });
 });
 
@@ -368,6 +462,10 @@ function renderResults() {
     renderIndividualChart();
     renderBreakdownChart();
     renderDetailedAnalysis();
+
+    // 히스토리 저장 및 표시
+    saveToHistory(bestOption, finalAssets, optionNames, inputs);
+    loadHistory();
 }
 
 // ========== 판정 렌더링 ==========
@@ -390,7 +488,7 @@ function renderVerdict(bestOption, finalAssets, optionNames, holdingPeriod) {
                     <strong style="font-size: 1.2rem; margin-left: 10px;">${optionNames[option]}</strong>
                 </div>
                 <div style="text-align: right;">
-                    <div style="font-size: 1.3rem; font-weight: 700; color: ${option === bestOption ? '#6366F1' : '#6B7280'};">${finalAssets[option].toFixed(2)}억</div>
+                    <div class="count-up" style="font-size: 1.3rem; font-weight: 700; color: ${option === bestOption ? '#6366F1' : '#6B7280'};" data-target="${finalAssets[option].toFixed(2)}">0.00억</div>
                     <div style="font-size: 0.9rem; color: #9CA3AF;">${diffText}</div>
                 </div>
             </div>
@@ -406,6 +504,11 @@ function renderVerdict(bestOption, finalAssets, optionNames, holdingPeriod) {
         </p>
         ${comparisonHTML}
     `;
+
+    // 카운트업 애니메이션 실행
+    setTimeout(() => {
+        animateCountUp();
+    }, 300);
 }
 
 // ========== 비교 그래프 렌더링 ==========
@@ -1067,3 +1170,112 @@ infoModal.addEventListener('click', (e) => {
         infoModal.classList.remove('active');
     }
 });
+
+// ========== 카운트업 애니메이션 ==========
+function animateCountUp() {
+    const countUpElements = document.querySelectorAll('.count-up');
+
+    countUpElements.forEach(element => {
+        const target = parseFloat(element.getAttribute('data-target'));
+        const duration = 1500; // 1.5초
+        const startTime = performance.now();
+
+        function update(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            // easeOutQuart 이징 함수
+            const easeProgress = 1 - Math.pow(1 - progress, 4);
+            const current = easeProgress * target;
+
+            element.textContent = current.toFixed(2) + '억';
+
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            } else {
+                element.textContent = target.toFixed(2) + '억';
+            }
+        }
+
+        requestAnimationFrame(update);
+    });
+}
+
+// ========== localStorage 히스토리 관리 ==========
+function saveToHistory(bestOption, finalAssets, optionNames, inputs) {
+    const history = JSON.parse(localStorage.getItem('calculationHistory') || '[]');
+
+    const historyItem = {
+        timestamp: Date.now(),
+        date: new Date().toLocaleString('ko-KR'),
+        bestOption: bestOption,
+        bestOptionName: optionNames[bestOption],
+        bestValue: finalAssets[bestOption],
+        options: Object.keys(finalAssets).map(key => ({
+            type: key,
+            name: optionNames[key],
+            value: finalAssets[key]
+        })),
+        inputs: {
+            salePrice: inputs.salePrice,
+            depositPrice: inputs.depositPrice,
+            monthlyDeposit: inputs.monthlyDeposit,
+            monthlyRent: inputs.monthlyRent,
+            holdingPeriod: inputs.holdingPeriod
+        }
+    };
+
+    // 최신 항목을 맨 앞에 추가
+    history.unshift(historyItem);
+
+    // 최대 5개까지만 저장
+    if (history.length > 5) {
+        history.pop();
+    }
+
+    localStorage.setItem('calculationHistory', JSON.stringify(history));
+}
+
+function loadHistory() {
+    const history = JSON.parse(localStorage.getItem('calculationHistory') || '[]');
+    const historySection = document.getElementById('historySection');
+    const historyList = document.getElementById('historyList');
+
+    if (history.length === 0) {
+        historySection.style.display = 'none';
+        return;
+    }
+
+    historySection.style.display = 'block';
+    historyList.innerHTML = '';
+
+    history.forEach((item, index) => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'history-item';
+        historyItem.innerHTML = `
+            <div class="history-info">
+                <div class="history-title">${item.options.map(o => o.name).join(' vs ')}</div>
+                <div class="history-date">${item.date}</div>
+            </div>
+            <div class="history-result">
+                <div class="history-winner">🏆 ${item.bestOptionName}</div>
+                <div class="history-amount">${item.bestValue.toFixed(2)}억</div>
+            </div>
+        `;
+
+        // 클릭 시 해당 결과를 다시 불러오기 (선택적 기능)
+        historyItem.addEventListener('click', () => {
+            // 입력값 복원
+            document.getElementById('salePrice').value = item.inputs.salePrice;
+            document.getElementById('depositPrice').value = item.inputs.depositPrice;
+            document.getElementById('monthlyDeposit').value = item.inputs.monthlyDeposit;
+            document.getElementById('monthlyRent').value = item.inputs.monthlyRent;
+            document.getElementById('holdingPeriod').value = item.inputs.holdingPeriod;
+
+            // 스크롤을 결과 섹션 상단으로
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        historyList.appendChild(historyItem);
+    });
+}

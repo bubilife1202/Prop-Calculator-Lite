@@ -40,6 +40,36 @@
                 </div>
 
                 <div class="residence-selector">
+                    <div class="preset-section">
+                        <h3>⚡ 빠른 시작 (프리셋)</h3>
+                        <div class="preset-buttons">
+                            <button class="preset-btn" data-preset="gangnam">
+                                <span class="preset-icon">🏙️</span>
+                                <span class="preset-title">서울 강남 신혼부부</span>
+                                <span class="preset-desc">매매 8억 vs 전세 5억</span>
+                            </button>
+                            <button class="preset-btn" data-preset="pangyo">
+                                <span class="preset-icon">💼</span>
+                                <span class="preset-title">경기 판교 IT직장인</span>
+                                <span class="preset-desc">매매 10억 vs 월세 200만</span>
+                            </button>
+                            <button class="preset-btn" data-preset="busan">
+                                <span class="preset-icon">🌊</span>
+                                <span class="preset-title">부산 해운대 은퇴준비</span>
+                                <span class="preset-desc">매매 5억 vs 전세 3억</span>
+                            </button>
+                            <button class="preset-btn" data-preset="local">
+                                <span class="preset-icon">🏡</span>
+                                <span class="preset-title">지방 소도시 실수요</span>
+                                <span class="preset-desc">매매 3억 vs 전세 1.5억</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="divider">
+                        <span>또는 직접 선택</span>
+                    </div>
+
                     <h2>🏡 비교하고 싶은 주거 형태를 선택하세요</h2>
                     <p class="hint">최소 2개 이상 선택해주세요</p>
 
@@ -328,6 +358,11 @@
                     <button id="backBtn" class="back-btn">← 다시 계산하기</button>
                     <h1>📊 분석 결과</h1>
                 </header>
+
+                <div id="historySection" class="history-section" style="display: none;">
+                    <h3>📜 최근 계산 히스토리</h3>
+                    <div id="historyList" class="history-list"></div>
+                </div>
 
                 <div class="result-summary">
                     <div class="verdict-card">
