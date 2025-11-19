@@ -116,7 +116,6 @@ syncSliderWithInput('salePriceSlider', 'salePrice');
 syncSliderWithInput('depositPriceSlider', 'depositPrice');
 syncSliderWithInput('monthlyDepositSlider', 'monthlyDeposit');
 syncSliderWithInput('monthlyRentSlider', 'monthlyRent');
-syncSliderWithInput('myCashSlider', 'myCash');
 syncSliderWithInput('loanRateSlider', 'loanRate');
 syncSliderWithInput('appreciationRateSlider', 'appreciationRate');
 syncSliderWithInput('investmentReturnSlider', 'investmentReturn');
@@ -134,11 +133,10 @@ function switchScreen(from, to) {
 // ========== 입력값 가져오기 ==========
 function getInputValues() {
     return {
-        salePrice: parseFloat(document.getElementById('salePrice').value),
-        depositPrice: parseFloat(document.getElementById('depositPrice').value),
-        monthlyDeposit: parseFloat(document.getElementById('monthlyDeposit').value),
-        monthlyRent: parseFloat(document.getElementById('monthlyRent').value) / 10000,
-        myCash: parseFloat(document.getElementById('myCash').value),
+        salePrice: parseFloat(document.getElementById('salePrice').value) || 0,
+        depositPrice: parseFloat(document.getElementById('depositPrice').value) || 0,
+        monthlyDeposit: parseFloat(document.getElementById('monthlyDeposit').value) || 0,
+        monthlyRent: parseFloat(document.getElementById('monthlyRent').value) / 10000 || 0,
         loanRate: parseFloat(document.getElementById('loanRate').value) / 100,
         acquisitionTax: parseFloat(document.getElementById('acquisitionTax').value) / 100,
         propertyTax: parseFloat(document.getElementById('propertyTax').value) / 10000,
@@ -154,17 +152,14 @@ function validateInputs(inputs, selectedTypes) {
 
     if (selectedTypes.includes('buy')) {
         if (inputs.salePrice <= 0) errors.push('매매가를 입력해주세요.');
-        if (inputs.myCash < 0) errors.push('보유 현금은 0 이상이어야 합니다.');
     }
 
     if (selectedTypes.includes('jeonse')) {
         if (inputs.depositPrice <= 0) errors.push('전세 보증금을 입력해주세요.');
-        if (inputs.myCash < inputs.depositPrice) errors.push('보유 현금이 전세 보증금보다 적습니다.');
     }
 
     if (selectedTypes.includes('monthly')) {
         if (inputs.monthlyRent <= 0) errors.push('월세 임대료를 입력해주세요.');
-        if (inputs.myCash < inputs.monthlyDeposit) errors.push('보유 현금이 월세 보증금보다 적습니다.');
     }
 
     return errors;
@@ -198,10 +193,11 @@ function showValidationErrors(errors, screen) {
 
 // ========== 매수 시나리오 계산 ==========
 function calculateBuyScenario(inputs) {
-    const { salePrice, myCash, loanRate, acquisitionTax, propertyTax, appreciationRate, holdingPeriod } = inputs;
+    const { salePrice, loanRate, acquisitionTax, propertyTax, appreciationRate, holdingPeriod } = inputs;
 
     const acquisitionCost = salePrice * acquisitionTax;
-    const loanAmount = Math.max(0, salePrice - myCash);
+    // LTV 70% 기준으로 대출 (자기자본 30%)
+    const loanAmount = salePrice * 0.7;
 
     let yearlyData = [];
     let cumulativeCosts = acquisitionCost;
@@ -231,8 +227,10 @@ function calculateBuyScenario(inputs) {
 
 // ========== 전세 시나리오 계산 ==========
 function calculateJeonseScenario(inputs) {
-    const { depositPrice, myCash, investmentReturn, holdingPeriod } = inputs;
-    const investableAmount = Math.max(0, myCash - depositPrice);
+    const { salePrice, depositPrice, investmentReturn, holdingPeriod } = inputs;
+    // 매수와 동일한 초기 자본을 가정, 전세 보증금을 제외한 나머지를 투자
+    const initialCapital = salePrice;
+    const investableAmount = initialCapital - depositPrice;
 
     let yearlyData = [];
 
@@ -253,8 +251,10 @@ function calculateJeonseScenario(inputs) {
 
 // ========== 월세 시나리오 계산 ==========
 function calculateMonthlyRentScenario(inputs) {
-    const { monthlyDeposit, monthlyRent, myCash, investmentReturn, holdingPeriod } = inputs;
-    const investableAmount = Math.max(0, myCash - monthlyDeposit);
+    const { salePrice, monthlyDeposit, monthlyRent, investmentReturn, holdingPeriod } = inputs;
+    // 매수와 동일한 초기 자본을 가정, 월세 보증금을 제외한 나머지를 투자
+    const initialCapital = salePrice;
+    const investableAmount = initialCapital - monthlyDeposit;
 
     let yearlyData = [];
 
@@ -641,7 +641,8 @@ function renderDetailedAnalysis() {
 
     if (results.buy) {
         const finalData = results.buy[results.buy.length - 1];
-        const roi = ((finalData.asset - inputs.myCash) / inputs.myCash * 100).toFixed(1);
+        const initialCapital = inputs.salePrice;
+        const roi = ((finalData.asset - initialCapital) / initialCapital * 100).toFixed(1);
 
         analysisHTML += `
             <div style="background: #FEF2F2; border-left: 4px solid #EF4444; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
@@ -670,7 +671,9 @@ function renderDetailedAnalysis() {
 
     if (results.jeonse) {
         const finalData = results.jeonse[results.jeonse.length - 1];
-        const roi = ((finalData.asset - inputs.myCash) / inputs.myCash * 100).toFixed(1);
+        const initialCapital = inputs.salePrice;
+        const investedAmount = initialCapital - inputs.depositPrice;
+        const roi = ((finalData.asset - initialCapital) / initialCapital * 100).toFixed(1);
 
         analysisHTML += `
             <div style="background: #EFF6FF; border-left: 4px solid #3B82F6; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
@@ -682,7 +685,7 @@ function renderDetailedAnalysis() {
                     </div>
                     <div>
                         <p style="color: #1E3A8A; font-size: 0.9rem;">투자 수익</p>
-                        <p style="font-size: 1.3rem; font-weight: 700; color: #1E40AF;">${(finalData.investment - (inputs.myCash - inputs.depositPrice)).toFixed(2)}억</p>
+                        <p style="font-size: 1.3rem; font-weight: 700; color: #1E40AF;">${(finalData.investment - investedAmount).toFixed(2)}억</p>
                     </div>
                     <div>
                         <p style="color: #1E3A8A; font-size: 0.9rem;">투자 수익률 (ROI)</p>
@@ -699,7 +702,8 @@ function renderDetailedAnalysis() {
 
     if (results.monthly) {
         const finalData = results.monthly[results.monthly.length - 1];
-        const roi = ((finalData.asset - inputs.myCash) / inputs.myCash * 100).toFixed(1);
+        const initialCapital = inputs.salePrice;
+        const roi = ((finalData.asset - initialCapital) / initialCapital * 100).toFixed(1);
 
         analysisHTML += `
             <div style="background: #ECFDF5; border-left: 4px solid #10B981; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
@@ -805,4 +809,29 @@ document.getElementById('saveImageBtn').addEventListener('click', () => {
         saveBtn.innerHTML = originalHTML;
         saveBtn.disabled = false;
     });
+});
+
+// ========== 설명 모달 ==========
+const infoBtn = document.getElementById('infoBtn');
+const infoModal = document.getElementById('infoModal');
+const closeModal = document.getElementById('closeModal');
+const startBtn = document.getElementById('startBtn');
+
+infoBtn.addEventListener('click', () => {
+    infoModal.classList.add('active');
+});
+
+closeModal.addEventListener('click', () => {
+    infoModal.classList.remove('active');
+});
+
+startBtn.addEventListener('click', () => {
+    infoModal.classList.remove('active');
+});
+
+// 모달 배경 클릭 시 닫기
+infoModal.addEventListener('click', (e) => {
+    if (e.target === infoModal) {
+        infoModal.classList.remove('active');
+    }
 });

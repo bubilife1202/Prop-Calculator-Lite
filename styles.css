@@ -484,22 +484,6 @@ body {
     color: rgba(255, 255, 255, 0.9);
 }
 
-.ad-placeholder, .ad-placeholder-bottom {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 16px;
-    padding: 40px;
-    text-align: center;
-    min-height: 150px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.ad-placeholder p, .ad-placeholder-bottom p {
-    color: var(--gray-400);
-    font-size: 0.9rem;
-}
-
 /* ========== 결과 화면 ========== */
 .result-header {
     display: flex;
@@ -933,29 +917,187 @@ body {
     transform: translateX(5px);
 }
 
-/* ========== 광고 섹션 ========== */
-.ad-section {
-    margin: 40px 0;
-    padding: 20px;
-    text-align: center;
-}
-
-.ad-label {
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.6);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 15px;
-}
-
-.ad-placeholder {
+/* ========== 정보 버튼 ========== */
+.info-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
     background: rgba(255, 255, 255, 0.95);
+    color: var(--primary);
+    border: 2px solid white;
     border-radius: 12px;
-    min-height: 250px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: var(--transition);
+    box-shadow: var(--shadow-md);
+}
+
+.info-btn:hover {
+    background: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* ========== 모달 ========== */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.modal.active {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px dashed var(--gray-300);
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: white;
+    border-radius: 24px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-xl);
+    animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30px 30px 20px;
+    border-bottom: 2px solid var(--gray-100);
+}
+
+.modal-header h2 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--gray-800);
+}
+
+.modal-close {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gray-100);
+    border: none;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.modal-close:hover {
+    background: var(--danger);
+    color: white;
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: 30px;
+}
+
+.modal-body h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-top: 25px;
+    margin-bottom: 15px;
+}
+
+.modal-body h3:first-child {
+    margin-top: 0;
+}
+
+.modal-body p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--gray-700);
+    margin-bottom: 15px;
+}
+
+.modal-body ul,
+.modal-body ol {
+    margin-left: 25px;
+    margin-bottom: 15px;
+}
+
+.modal-body li {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--gray-700);
+    margin-bottom: 10px;
+}
+
+.modal-body .notice {
+    background: var(--warning);
+    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+    border-left: 4px solid var(--warning);
+    padding: 15px 20px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    color: var(--gray-800);
+    margin-bottom: 0;
+}
+
+.modal-footer {
+    padding: 20px 30px 30px;
+    border-top: 2px solid var(--gray-100);
+}
+
+.modal-btn {
+    width: 100%;
+    padding: 18px;
+    background: var(--gradient-secondary);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+}
+
+.modal-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
 }
 
 /* ========== 반응형: 스텝 인디케이터 ========== */
@@ -991,5 +1133,34 @@ body {
 
     .step-line {
         max-width: 30px;
+    }
+
+    .modal-content {
+        max-height: 95vh;
+    }
+
+    .modal-header {
+        padding: 20px;
+    }
+
+    .modal-header h2 {
+        font-size: 1.4rem;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .modal-body h3 {
+        font-size: 1.1rem;
+    }
+
+    .modal-footer {
+        padding: 15px 20px 20px;
+    }
+
+    .info-btn {
+        font-size: 0.9rem;
+        padding: 10px 20px;
     }
 }
