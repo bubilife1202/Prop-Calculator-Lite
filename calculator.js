@@ -132,14 +132,22 @@ function syncSliderWithInput(sliderId, inputId) {
     }
 }
 
-syncSliderWithInput('salePriceSlider', 'salePrice');
-syncSliderWithInput('depositPriceSlider', 'depositPrice');
-syncSliderWithInput('monthlyDepositSlider', 'monthlyDeposit');
-syncSliderWithInput('monthlyRentSlider', 'monthlyRent');
-syncSliderWithInput('loanRateSlider', 'loanRate');
-syncSliderWithInput('appreciationRateSlider', 'appreciationRate');
-syncSliderWithInput('investmentReturnSlider', 'investmentReturn');
-syncSliderWithInput('holdingPeriodSlider', 'holdingPeriod');
+// ========== 슬라이더 동기화 초기화 ==========
+document.addEventListener('DOMContentLoaded', function() {
+    // 모든 슬라이더-입력 동기화 초기화
+    initializeAllSliders();
+});
+
+function initializeAllSliders() {
+    syncSliderWithInput('salePriceSlider', 'salePrice');
+    syncSliderWithInput('depositPriceSlider', 'depositPrice');
+    syncSliderWithInput('monthlyDepositSlider', 'monthlyDeposit');
+    syncSliderWithInput('monthlyRentSlider', 'monthlyRent');
+    syncSliderWithInput('loanRateSlider', 'loanRate');
+    syncSliderWithInput('appreciationRateSlider', 'appreciationRate');
+    syncSliderWithInput('investmentReturnSlider', 'investmentReturn');
+    syncSliderWithInput('holdingPeriodSlider', 'holdingPeriod');
+}
 
 // ========== 화면 전환 함수 ==========
 function switchScreen(from, to) {

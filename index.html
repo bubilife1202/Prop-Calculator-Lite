@@ -183,7 +183,7 @@
                             <div class="input-with-slider">
                                 <input type="range" id="loanRateSlider" min="1" max="10" step="0.1" value="4">
                                 <div class="input-wrapper">
-                                    <input type="number" id="loanRate" min="0" step="0.1" value="4">
+                                    <input type="number" id="loanRate" min="0" max="10" step="0.1" value="4">
                                     <span class="unit">%</span>
                                 </div>
                             </div>
@@ -238,7 +238,7 @@
                                 <span class="tooltip" title="매수 시 발생하는 초기 비용">ⓘ</span>
                             </label>
                             <div class="input-wrapper">
-                                <input type="number" id="acquisitionTax" min="0" step="0.1" value="4.5">
+                                <input type="number" id="acquisitionTax" min="0" max="20" step="0.1" value="4.5">
                                 <span class="unit">%</span>
                             </div>
                         </div>
@@ -249,7 +249,7 @@
                                 <span class="tooltip" title="재산세 + 종합부동산세">ⓘ</span>
                             </label>
                             <div class="input-wrapper">
-                                <input type="number" id="propertyTax" min="0" step="10" value="100">
+                                <input type="number" id="propertyTax" min="0" max="10000" step="10" value="100">
                                 <span class="unit">만원/년</span>
                             </div>
                         </div>
@@ -265,7 +265,7 @@
                             <div class="input-with-slider">
                                 <input type="range" id="appreciationRateSlider" min="-5" max="15" step="0.5" value="2">
                                 <div class="input-wrapper">
-                                    <input type="number" id="appreciationRate" min="-10" step="0.1" value="2">
+                                    <input type="number" id="appreciationRate" min="-10" max="20" step="0.1" value="2">
                                     <span class="unit">%/년</span>
                                 </div>
                             </div>
@@ -280,7 +280,7 @@
                             <div class="input-with-slider">
                                 <input type="range" id="investmentReturnSlider" min="0" max="20" step="0.5" value="8">
                                 <div class="input-wrapper">
-                                    <input type="number" id="investmentReturn" min="0" step="0.1" value="8">
+                                    <input type="number" id="investmentReturn" min="0" max="20" step="0.1" value="8">
                                     <span class="unit">%/년</span>
                                 </div>
                             </div>
@@ -295,7 +295,7 @@
                             <div class="input-with-slider">
                                 <input type="range" id="holdingPeriodSlider" min="1" max="30" step="1" value="10">
                                 <div class="input-wrapper">
-                                    <input type="number" id="holdingPeriod" min="1" step="1" value="10">
+                                    <input type="number" id="holdingPeriod" min="1" max="30" step="1" value="10">
                                     <span class="unit">년</span>
                                 </div>
                             </div>
