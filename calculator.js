@@ -135,17 +135,29 @@ step1NextBtn.addEventListener('click', () => {
 
     switchScreen(step1Screen, step2Screen);
 
-    // 화면 전환 완료 후 (500ms 애니메이션 + 100ms 여유) 슬라이더 강제 재초기화
+    // 화면 전환 후 슬라이더 값 강제 동기화
     setTimeout(() => {
         if (selectedResidenceTypes.includes('buy')) {
-            initializeSingleSlider('salePriceSlider', 'salePrice');
+            const salePrice = document.getElementById('salePrice');
+            const salePriceSlider = document.getElementById('salePriceSlider');
+            salePriceSlider.value = salePrice.value;
+            console.log(`🔄 매매가 동기화: ${salePriceSlider.value}`);
         }
         if (selectedResidenceTypes.includes('jeonse')) {
-            initializeSingleSlider('depositPriceSlider', 'depositPrice');
+            const depositPrice = document.getElementById('depositPrice');
+            const depositPriceSlider = document.getElementById('depositPriceSlider');
+            depositPriceSlider.value = depositPrice.value;
+            console.log(`🔄 전세 보증금 동기화: ${depositPriceSlider.value}`);
         }
         if (selectedResidenceTypes.includes('monthly')) {
-            initializeSingleSlider('monthlyDepositSlider', 'monthlyDeposit');
-            initializeSingleSlider('monthlyRentSlider', 'monthlyRent');
+            const monthlyDeposit = document.getElementById('monthlyDeposit');
+            const monthlyDepositSlider = document.getElementById('monthlyDepositSlider');
+            monthlyDepositSlider.value = monthlyDeposit.value;
+
+            const monthlyRent = document.getElementById('monthlyRent');
+            const monthlyRentSlider = document.getElementById('monthlyRentSlider');
+            monthlyRentSlider.value = monthlyRent.value;
+            console.log(`🔄 월세 동기화: 보증금=${monthlyDepositSlider.value}, 임대료=${monthlyRentSlider.value}`);
         }
     }, 600);
 });
@@ -202,7 +214,10 @@ document.getElementById('calculateBtn').addEventListener('click', () => {
 });
 
 // ========== 슬라이더 동기화 ==========
-function initializeSingleSlider(sliderId, inputId) {
+// 각 슬라이더별 핸들러 저장
+const sliderHandlers = new Map();
+
+function setupSlider(sliderId, inputId) {
     const slider = document.getElementById(sliderId);
     const input = document.getElementById(inputId);
 
@@ -211,60 +226,61 @@ function initializeSingleSlider(sliderId, inputId) {
         return;
     }
 
-    // 기존 이벤트 리스너 제거를 위해 요소 복제
-    const newSlider = slider.cloneNode(true);
-    slider.parentNode.replaceChild(newSlider, slider);
+    // 핸들러 정의
+    const sliderHandler = function(e) {
+        input.value = e.target.value;
+        console.log(`슬라이더 → 입력: ${sliderId} = ${e.target.value}`);
+    };
 
-    const newInput = input.cloneNode(true);
-    input.parentNode.replaceChild(newInput, input);
-
-    // 새 요소 가져오기
-    const freshSlider = document.getElementById(sliderId);
-    const freshInput = document.getElementById(inputId);
-
-    // 슬라이더 변경 → 입력 필드 업데이트
-    freshSlider.addEventListener('input', function(e) {
-        freshInput.value = e.target.value;
-    });
-
-    // 입력 필드 변경 → 슬라이더 업데이트
-    freshInput.addEventListener('input', function(e) {
+    const inputHandler = function(e) {
         const value = parseFloat(e.target.value);
         if (!isNaN(value)) {
-            const min = parseFloat(freshSlider.min);
-            const max = parseFloat(freshSlider.max);
-
-            // 슬라이더 범위 내로 제한
-            if (value < min) {
-                freshSlider.value = min;
-            } else if (value > max) {
-                freshSlider.value = max;
-            } else {
-                freshSlider.value = value;
-            }
+            const min = parseFloat(slider.min);
+            const max = parseFloat(slider.max);
+            slider.value = Math.min(Math.max(value, min), max);
+            console.log(`입력 → 슬라이더: ${inputId} = ${slider.value}`);
         }
-    });
+    };
 
-    // 초기값 동기화: input 값을 slider에 반영
-    const initialValue = parseFloat(freshInput.value);
-    if (!isNaN(initialValue)) {
-        const min = parseFloat(freshSlider.min);
-        const max = parseFloat(freshSlider.max);
-        freshSlider.value = Math.min(Math.max(initialValue, min), max);
+    // 기존 핸들러 제거
+    const key = `${sliderId}-${inputId}`;
+    if (sliderHandlers.has(key)) {
+        const old = sliderHandlers.get(key);
+        slider.removeEventListener('input', old.sliderHandler);
+        input.removeEventListener('input', old.inputHandler);
     }
 
-    console.log(`✅ 슬라이더 초기화 완료: ${sliderId} = ${freshSlider.value}, ${inputId} = ${freshInput.value}`);
+    // 새 핸들러 추가
+    slider.addEventListener('input', sliderHandler);
+    input.addEventListener('input', inputHandler);
+
+    // 핸들러 저장
+    sliderHandlers.set(key, { sliderHandler, inputHandler });
+
+    // 초기값 동기화
+    const initialValue = parseFloat(input.value);
+    if (!isNaN(initialValue)) {
+        const min = parseFloat(slider.min);
+        const max = parseFloat(slider.max);
+        slider.value = Math.min(Math.max(initialValue, min), max);
+    }
+
+    console.log(`✅ 슬라이더 설정 완료: ${sliderId} = ${slider.value}, ${inputId} = ${input.value}`);
 }
 
 // ========== 슬라이더 동기화 초기화 ==========
 document.addEventListener('DOMContentLoaded', function() {
-    // display:none이 아닌 슬라이더만 초기화 (Step 2, Step 3의 공통 입력)
-    initializeSingleSlider('loanRateSlider', 'loanRate');
-    initializeSingleSlider('appreciationRateSlider', 'appreciationRate');
-    initializeSingleSlider('investmentReturnSlider', 'investmentReturn');
-    initializeSingleSlider('holdingPeriodSlider', 'holdingPeriod');
+    // 모든 슬라이더를 한 번에 설정 (display:none이어도 상관없음)
+    setupSlider('salePriceSlider', 'salePrice');
+    setupSlider('depositPriceSlider', 'depositPrice');
+    setupSlider('monthlyDepositSlider', 'monthlyDeposit');
+    setupSlider('monthlyRentSlider', 'monthlyRent');
+    setupSlider('loanRateSlider', 'loanRate');
+    setupSlider('appreciationRateSlider', 'appreciationRate');
+    setupSlider('investmentReturnSlider', 'investmentReturn');
+    setupSlider('holdingPeriodSlider', 'holdingPeriod');
 
-    console.log('✅ DOMContentLoaded: 기본 슬라이더 초기화 완료');
+    console.log('✅ DOMContentLoaded: 모든 슬라이더 설정 완료');
 });
 
 // ========== 화면 전환 함수 ==========
