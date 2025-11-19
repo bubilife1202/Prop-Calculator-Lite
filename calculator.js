@@ -39,6 +39,22 @@ step1NextBtn.addEventListener('click', () => {
     document.getElementById('monthlyInputs').style.display =
         selectedResidenceTypes.includes('monthly') ? 'block' : 'none';
 
+    // 표시된 입력 필드의 슬라이더 재초기화
+    setTimeout(() => {
+        if (selectedResidenceTypes.includes('buy')) {
+            syncSliderWithInput('salePriceSlider', 'salePrice');
+        }
+        if (selectedResidenceTypes.includes('jeonse')) {
+            syncSliderWithInput('depositPriceSlider', 'depositPrice');
+        }
+        if (selectedResidenceTypes.includes('monthly')) {
+            syncSliderWithInput('monthlyDepositSlider', 'monthlyDeposit');
+            syncSliderWithInput('monthlyRentSlider', 'monthlyRent');
+        }
+        // 공통 필드
+        syncSliderWithInput('loanRateSlider', 'loanRate');
+    }, 100);
+
     switchScreen(step1Screen, step2Screen);
 });
 
@@ -49,6 +65,13 @@ document.getElementById('step2BackBtn').addEventListener('click', () => {
 
 document.getElementById('step2NextBtn').addEventListener('click', () => {
     switchScreen(step2Screen, step3Screen);
+
+    // 고급 설정 슬라이더 재초기화
+    setTimeout(() => {
+        syncSliderWithInput('appreciationRateSlider', 'appreciationRate');
+        syncSliderWithInput('investmentReturnSlider', 'investmentReturn');
+        syncSliderWithInput('holdingPeriodSlider', 'holdingPeriod');
+    }, 100);
 });
 
 // 고급 설정 건너뛰기 -> 바로 계산
@@ -98,36 +121,50 @@ function syncSliderWithInput(sliderId, inputId) {
     const slider = document.getElementById(sliderId);
     const input = document.getElementById(inputId);
 
-    if (!slider || !input) return;
+    if (!slider || !input) {
+        console.warn(`슬라이더 또는 입력 필드를 찾을 수 없습니다: ${sliderId}, ${inputId}`);
+        return;
+    }
+
+    // 기존 이벤트 리스너 제거 (중복 방지)
+    const sliderClone = slider.cloneNode(true);
+    const inputClone = input.cloneNode(true);
+    slider.parentNode.replaceChild(sliderClone, slider);
+    input.parentNode.replaceChild(inputClone, input);
+
+    const newSlider = document.getElementById(sliderId);
+    const newInput = document.getElementById(inputId);
 
     // 슬라이더 변경 → 입력 필드 업데이트
-    slider.addEventListener('input', (e) => {
-        input.value = e.target.value;
+    newSlider.addEventListener('input', (e) => {
+        newInput.value = e.target.value;
     });
 
     // 입력 필드 변경 → 슬라이더 업데이트
-    input.addEventListener('input', (e) => {
+    newInput.addEventListener('input', (e) => {
         const value = parseFloat(e.target.value);
         if (!isNaN(value)) {
-            const min = parseFloat(slider.min);
-            const max = parseFloat(slider.max);
+            const min = parseFloat(newSlider.min);
+            const max = parseFloat(newSlider.max);
 
             // 슬라이더 범위 내로 제한
             if (value < min) {
-                slider.value = min;
+                newSlider.value = min;
             } else if (value > max) {
-                slider.value = max;
+                newSlider.value = max;
             } else {
-                slider.value = value;
+                newSlider.value = value;
             }
         }
     });
 
     // 초기값 동기화
-    if (input.value) {
-        const value = parseFloat(input.value);
+    if (newInput.value) {
+        const value = parseFloat(newInput.value);
         if (!isNaN(value)) {
-            slider.value = Math.min(Math.max(value, parseFloat(slider.min)), parseFloat(slider.max));
+            const min = parseFloat(newSlider.min);
+            const max = parseFloat(newSlider.max);
+            newSlider.value = Math.min(Math.max(value, min), max);
         }
     }
 }
