@@ -1,121 +1,221 @@
-# 🏠 집, 살까 말까? - 부동산 매수 vs 전세 계산기
+# 🎯 Risk Sniper
 
-## 📌 프로젝트 소개
+**Professional Prop Trading Risk Management Calculator**
 
-**"누구나 3초 만에 쓸 수 있는 직관성"**과 **"깐깐한 투자자를 위한 정밀함"**을 모두 갖춘 부동산 의사결정 계산기입니다.
-
-부동산 매수와 전세 중 어떤 선택이 더 유리한지 손쉽게 비교할 수 있습니다.
-
-### ✨ 주요 특징
-
-- 🟢 **간편 모드**: 최소한의 입력으로 3초 만에 결과 확인
-- 🔴 **정밀 모드**: 취득세, 보유세, 투자 수익률 등 세부 항목까지 고려한 정교한 분석
-- 📊 **시각화**: Chart.js 기반 골든 크로스 그래프로 손익분기점 한눈에 파악
-- 📱 **모바일 반응형**: 스마트폰, 태블릿, PC 모든 기기에서 편리하게 사용
-- 📷 **결과 저장**: 계산 결과를 이미지로 저장하여 공유 가능
-- 💰 **AdSense 최적화**: 광고 수익을 위한 전략적 배치 구조
-
-## 🚀 사용 방법
-
-### 간편 모드
-1. 매매가, 전세가, 내 현금, 대출 금리만 입력
-2. "손익 계산하기" 버튼 클릭
-3. 10년 후 손익 결과 즉시 확인
-
-### 정밀 모드
-1. 간편 모드 입력 후 "정밀 모드" 클릭
-2. 취득세, 보유세, 집값 상승률, 투자 수익률, 보유 기간 등 상세 설정
-3. 연도별 자산 변화 그래프와 함께 정밀한 분석 결과 확인
-
-## 🛠 기술 스택
-
-- **Frontend**: HTML5, CSS3, Vanilla JavaScript
-- **라이브러리**:
-  - Chart.js (v4.4.0) - 그래프 시각화
-  - html2canvas (v1.4.1) - 이미지 캡처
-- **배포**: GitHub Pages (서버 비용 0원)
-- **광고**: Google AdSense 연동 준비
-
-## 📂 프로젝트 구조
-
-```
-Prop-Calculator-Lite/
-├── index.html          # 메인 HTML
-├── styles.css          # 스타일시트
-├── calculator.js       # 계산 로직 및 UI 제어
-└── README.md          # 프로젝트 문서
-```
-
-## 🎯 핵심 기능
-
-### 1. 매수 시나리오 계산
-- 초기 비용 (취득세 + 중개수수료)
-- 대출금 및 연간 이자
-- 연간 보유세 (재산세 + 종부세)
-- 집값 상승에 따른 자산 증가
-
-### 2. 전세 시나리오 계산
-- 전세 보증금은 투자 불가 (묶여있음)
-- 남은 현금을 투자 수익률로 복리 운용
-- 최종 자산 = 투자 수익 + 전세 보증금
-
-### 3. 손익분기점 분석
-- 두 시나리오의 자산이 교차하는 시점 자동 계산
-- 그래프에 깃발 아이콘으로 표시
-
-## 📊 계산 공식
-
-### 매수 시 순자산
-```
-순자산 = 현재 집값 - 남은 대출 - (취득세 + 누적 이자 + 누적 보유세)
-```
-
-### 전세 시 순자산
-```
-순자산 = (내 현금 - 전세가) × (1 + 투자수익률)^년수 + 전세가
-```
-
-## 🌐 GitHub Pages 배포
-
-이 프로젝트는 GitHub Pages를 통해 무료로 배포됩니다.
-
-### 배포 방법
-1. 이 저장소를 GitHub에 푸시
-2. 저장소 Settings → Pages
-3. Source를 "main" 브랜치로 설정
-4. 배포 완료! (https://username.github.io/Prop-Calculator-Lite/)
-
-## 💡 사용 예시
-
-**시나리오**:
-- 매매가 8억, 전세가 5억, 내 현금 3억, 대출 금리 4%
-- 집값 상승률 2%, 투자 수익률 8%
-
-**결과**:
-- 10년 후 자산 차이: 전세가 약 2.4억 더 유리
-- 팁: 집값 상승률이 연 3.5% 이상이어야 매수가 유리
-
-## 📈 향후 개선 계획
-
-- [ ] 실제 지역별 시세 데이터 연동
-- [ ] 월세 옵션 추가
-- [ ] 다주택자 종부세 시뮬레이션
-- [ ] 대출 원리금 상환 옵션
-- [ ] 전세 자금 대출 고려
-- [ ] SNS 공유 기능 강화
-
-## 📝 라이선스
-
-MIT License
-
-## 🙏 기여
-
-버그 제보 및 기능 제안은 Issues를 통해 남겨주세요!
-
-## ⚠️ 면책 조항
-
-본 계산기는 참고용으로 제작되었으며, 실제 부동산 투자 결정 시에는 반드시 세무사, 공인중개사 등 전문가와 상담하시기 바랍니다.
+A commercial-grade, mobile-first web application for calculating optimal position sizes and managing risk in prop trading. Built with React, TypeScript, and Tailwind CSS.
 
 ---
 
-Made with ❤️ for smart property investors
+## ✨ Features
+
+### 📊 Core Functionality
+- **Position Size Calculator**: Automatically calculate optimal lot sizes based on account balance, risk percentage, and stop loss
+- **Multi-Asset Support**: Forex, Gold, Indices, and Crypto with accurate pip values
+- **Drawdown Simulator**: Visualize account balance after 1 and 5 consecutive losses
+- **Real-time Validation**: Instant feedback with warnings for high-risk trades (>2%)
+
+### 💾 User Retention
+- **Auto-Save**: Your last settings are automatically saved using localStorage
+- **Trade History**: Save and restore up to 10 recent calculations
+- **Persistent State**: Never lose your data - everything is stored locally
+
+### 🎨 UI/UX
+- **Cyberpunk Financial Theme**: Deep dark backgrounds (#0a0a0a) with neon accents
+- **Mobile-First Design**: Optimized for touch with 44px+ touch targets
+- **Bottom Navigation**: Easy thumb-zone navigation on mobile
+- **Animated Feedback**: Count-up animations and visual warnings
+
+### ⚡ Performance
+- **Lightweight**: ~243KB gzipped JavaScript bundle
+- **Fast**: Built with Vite for instant hot reload
+- **Type-Safe**: 100% TypeScript for reliability
+- **Tested**: Comprehensive unit tests with Vitest
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+ and npm
+
+### Installation
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Run tests
+npm test
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+---
+
+## 📱 Usage
+
+1. **Calculator Tab**
+   - Enter your account balance
+   - Set risk percentage (defaults: 0.5%, 1%, 2%)
+   - Input stop loss in pips
+   - Select asset class
+   - Get instant position size calculation
+
+2. **History Tab**
+   - View your last 10 calculations
+   - Restore previous settings with one tap
+   - Delete individual items or clear all
+
+3. **Settings Tab**
+   - Learn about the calculation formula
+   - Understand how data is stored
+   - Access resources
+
+---
+
+## 🧮 Calculation Formula
+
+```
+Money at Risk = Account Balance × Risk %
+Lot Size = Money at Risk ÷ (Stop Loss Pips × Pip Value)
+```
+
+### Pip Values (per Standard Lot)
+- **Forex**: $10
+- **Gold (XAUUSD)**: $10
+- **Indices**: $1 (average)
+- **Crypto**: $10
+
+---
+
+## 🧪 Testing
+
+The calculator includes comprehensive unit tests:
+
+```bash
+npm test
+```
+
+### Test Coverage
+- ✅ Accurate lot size calculations
+- ✅ Multi-asset support verification
+- ✅ Edge case handling (invalid inputs)
+- ✅ Drawdown simulation accuracy
+- ✅ Formatting utilities
+
+**Example Test Case**:
+- 100k account, 1% risk, 10 pip SL on EURUSD = **10 Standard Lots** ✓
+
+---
+
+## 🛠️ Tech Stack
+
+| Category | Technology |
+|----------|-----------|
+| **Framework** | React 19 |
+| **Language** | TypeScript 5 |
+| **Build Tool** | Vite 7 |
+| **Styling** | Tailwind CSS 4 |
+| **State** | Zustand (with persist) |
+| **Icons** | Lucide React |
+| **Testing** | Vitest |
+| **Deployment** | Netlify (serverless) |
+
+---
+
+## 📦 Project Structure
+
+```
+/
+├── src/
+│   ├── components/
+│   │   ├── Calculator.tsx    # Main calculator UI
+│   │   ├── History.tsx       # Trade history list
+│   │   └── Settings.tsx      # Info and settings
+│   ├── store/
+│   │   └── useStore.ts       # Zustand store with persistence
+│   ├── utils/
+│   │   ├── calculator.ts     # Core calculation logic
+│   │   └── calculator.test.ts # Unit tests
+│   ├── lib/
+│   │   └── utils.ts          # Utility functions (cn, etc.)
+│   ├── App.tsx               # Main app with navigation
+│   ├── main.tsx              # Entry point
+│   └── index.css             # Global styles
+├── index.html
+├── vite.config.ts
+├── tailwind.config.js
+├── tsconfig.json
+└── package.json
+```
+
+---
+
+## 🎨 Design System
+
+### Colors
+```css
+Background Primary: #0a0a0a
+Background Secondary: #111111
+Background Tertiary: #1a1a1a
+
+Neon Green (Profit): #00ff88
+Neon Red (Loss): #ff0055
+Neon Blue: #00d4ff
+Neon Purple: #b700ff
+Neon Yellow: #ffed00
+```
+
+### Typography
+- Font: System fonts (-apple-system, BlinkMacSystemFont, Segoe UI, Roboto)
+- Input font-size: 16px (prevents iOS zoom)
+
+---
+
+## 📱 Mobile Optimization
+
+- **Viewport**: Fixed viewport with no user scaling
+- **Touch Targets**: Minimum 44px height for all interactive elements
+- **Input Prevention**: 16px font-size to prevent iOS zoom on focus
+- **Keyboard Handling**: Layout doesn't shift when keyboard appears
+- **Bottom Navigation**: Thumb-zone optimized (64px height)
+
+---
+
+## ⚠️ Disclaimer
+
+**This tool is for educational purposes only.**
+
+- Not financial advice
+- Always consult with a licensed financial advisor
+- Past performance does not guarantee future results
+- Trading involves risk of loss
+
+---
+
+## 📄 License
+
+ISC
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+---
+
+## 🐛 Issues
+
+Found a bug? Please open an issue on GitHub.
+
+---
+
+**Built with ❤️ for prop traders worldwide**
