@@ -327,7 +327,7 @@ export function Calculator() {
           {/* Main Result */}
           <div className="text-center space-y-2 pb-5 border-b border-bg-tertiary">
             <p className="text-xs font-bold text-text-muted uppercase tracking-wide">Recommended Position Size</p>
-            <div className={cn('text-5xl font-bold text-text-primary')}>
+            <div className={cn('text-5xl font-bold text-text-primary', isAnimating && 'animate-pulse')}>
               {currentResult.lotSize}
             </div>
             <p className="text-sm text-text-secondary font-medium">{currentResult.lotSizeType} Lots</p>
