@@ -16,6 +16,11 @@ interface StoreState {
   stopLossPips: number;
   assetClass: AssetClass;
 
+  // New fields
+  manualPipValue: number | undefined;
+  commissionPerLot: number;
+  isJPY: boolean;
+
   // Trade history (persisted)
   history: TradeHistory[];
 
@@ -27,6 +32,9 @@ interface StoreState {
   setRiskPercent: (percent: number) => void;
   setStopLossPips: (pips: number) => void;
   setAssetClass: (asset: AssetClass) => void;
+  setManualPipValue: (value: number | undefined) => void;
+  setCommissionPerLot: (value: number) => void;
+  setIsJPY: (value: boolean) => void;
   setCurrentResult: (result: CalculationResult | null) => void;
   addToHistory: (input: CalculationInput, result: CalculationResult) => void;
   removeFromHistory: (id: string) => void;
@@ -42,6 +50,9 @@ export const useStore = create<StoreState>()(
       riskPercent: 1,
       stopLossPips: 10,
       assetClass: 'forex',
+      manualPipValue: undefined,
+      commissionPerLot: 0,
+      isJPY: false,
       history: [],
       currentResult: null,
 
@@ -50,6 +61,9 @@ export const useStore = create<StoreState>()(
       setRiskPercent: (percent) => set({ riskPercent: percent }),
       setStopLossPips: (pips) => set({ stopLossPips: pips }),
       setAssetClass: (asset) => set({ assetClass: asset }),
+      setManualPipValue: (value) => set({ manualPipValue: value }),
+      setCommissionPerLot: (value) => set({ commissionPerLot: value }),
+      setIsJPY: (value) => set({ isJPY: value }),
       setCurrentResult: (result) => set({ currentResult: result }),
 
       addToHistory: (input, result) =>
@@ -79,6 +93,9 @@ export const useStore = create<StoreState>()(
           stopLossPips: item.input.stopLossPips,
           assetClass: item.input.assetClass,
           currentResult: item.result,
+          manualPipValue: item.input.manualPipValue,
+          commissionPerLot: item.input.commissionPerLot || 0,
+          isJPY: item.input.isJPY || false,
         }),
     }),
     {
@@ -89,6 +106,9 @@ export const useStore = create<StoreState>()(
         riskPercent: state.riskPercent,
         stopLossPips: state.stopLossPips,
         assetClass: state.assetClass,
+        manualPipValue: state.manualPipValue,
+        commissionPerLot: state.commissionPerLot,
+        isJPY: state.isJPY,
         history: state.history,
       }),
     }
